@@ -1,43 +1,56 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-#from users.models import User
-
-#class Unit(models.Model):
-    #"""
-    #Модель единиц измерения.
-    #"""
-    #pass
+from users.models import User
 
 
-#class Tag(models.Model):
- #   """
-  #  Модель Tag.
-   # """
-    #title = models.CharField('Название тэга',
-    #                         max_length=20)
-    #slug = models.SlugField('Короткая ссылка',
-    #                        max_length=50, unique=True)
-    #color = models.CharField(max_length=16)
+class Tag(models.Model):
+    """
+    Модель Tag.
+    """
+    title = models.CharField(
+        verbose_name='Название тэга',
+        max_length=20,
+        unique=True,
+    )
+    slug = models.SlugField(
+        verbose_name='Короткая ссылка',
+        max_length=50,
+        unique=True,
+        db_index=False,
+    )
+    color = models.CharField(
+        verbose_name='Цвет',
+        max_length=7,
+        unique=True,
+        db_index=False,
+    )
 
-    #class Meta:
-    #    verbose_name = 'Тэг'
-    #    verbose_name_plural = 'Тэги'
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+        ordering = ('title',)
 
-    #def __str__(self):
-    #    return self.title
+    def __str__(self):
+        return self.title
 
 
 class Ingredient(models.Model):
     """
     Модель ингредиентов.
     """
-    name = models.CharField('Название ингредиента',
-                             max_length=50)
-    measurement_unit =  models.CharField('Единицы измерения', max_length=20)
+    name = models.CharField(
+        'Название ингредиента',
+        max_length=50
+    )
+    measurement_unit =  models.CharField(
+        'Единицы измерения',
+        max_length=20
+    )
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -47,26 +60,31 @@ class Ingredient(models.Model):
 #    """
 #    Модель рецептов.
 #    """
-#    title = models.CharField('Название рецепта',
+#    name = models.CharField('Название блюда',
 #                             max_length=200)
-#    text = models.TextField('Текст рецепта',
-#                            help_text='Введите описание рецепта')
+#    text = models.TextField(
+#       verbose_name='Текст рецепта',
+#       help_text='Введите описание рецепта'
+#    )
 #    pub_date = models.DateTimeField(
-#        'Дата публикации',
-#        auto_now_add=True)
+#        verbose_name='Дата публикации',
+#        auto_now_add=True,
+#        editable=False,)
     #quantity = DecimalField(decimal_places=10, max_digits=5)
 #    author = models.ForeignKey(
-#        User,
-#        on_delete=models.CASCADE,
+#        to=User,
+#        on_delete=models.SET_NULL,
 #        related_name='recipes',
-#        verbose_name='Автор',
+#        verbose_name='Автор рецепта',
 #        help_text='Укажите автора рецепта'
 #    )
 
 #    tag = models.ManyToManyField(
 #        Tag,
-#        blank=True, null=True,
+#        #blank=True, null=True,
 #        on_delete=models.SET_NULL,
+#        verbose_name='Тэг',
+#        related_name='recipes',
 #    )
 
 #    image = models.ImageField(
@@ -76,7 +94,11 @@ class Ingredient(models.Model):
 #        #null=True,
 #    )
 
-#    ingredients = models.ManyToManyField(Ingredient, through='RecipesIngredient')
+#    ingredients = models.ManyToManyField(
+#        Ingredient, through='RecipesIngredient',
+#        verbose_name="Ингредиенты блюда",
+#        related_name="recipes",
+#    )
 #
 #    class Meta:
 #        ordering = ('-pub_date',)

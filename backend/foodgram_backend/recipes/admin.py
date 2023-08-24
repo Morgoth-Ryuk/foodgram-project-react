@@ -24,10 +24,8 @@ from import_export.widgets import ForeignKeyWidget
 #    empty_value_display = '-пусто-'
 
 #admin.site.register(Recipes, RecipesAdmin)
-#admin.site.register(Tag)
 #admin.site.register(RecipesIngredient)
 #admin.site.register()
-#admin.site.register(Ingredient)
 
 class IngredientResource(resources.ModelResource):
     #category = fields.Field(
@@ -43,6 +41,6 @@ class IngredientResource(resources.ModelResource):
 class IngredientAdmin(ImportExportActionModelAdmin):
     resource_class = IngredientResource
     list_display = [field.name for field in Ingredient._meta.fields if field.name != 'id']
-    #inlines = [IngredientImageInline]
 
 admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(Tag)
