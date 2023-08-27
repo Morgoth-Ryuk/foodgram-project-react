@@ -2,11 +2,12 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+DATE_TIME_FORMAT = "%d/%m/%Y %H:%M"
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-a=bbgdblbtl%f4e06a1)r30tsqgkjlm7v9=b&@son*%i!1^qhj'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -23,7 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
-    #'djoser',
+    'djoser',
+    'django_filters',
     'import_export',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',

@@ -7,13 +7,12 @@ class UserAdmin(admin.ModelAdmin):
     Регистрация и настройка отображения модели User в админке.
     """
     list_display = (
-        'pk',
         'username',
+        'first_name',
+        'last_name',
         'email',
-        'role',
-        'bio',
     )
-    list_editable = ('username','email','bio',)
+    #list_editable = ('username','email')
     search_fields = ('username','email')
-    list_filter = ('username','email','role',)
+    list_filter = ('username','email')
     empty_value_display = '-пусто-'

@@ -99,6 +99,21 @@ class Ingredient(models.Model):
 #        verbose_name="Ингредиенты блюда",
 #        related_name="recipes",
 #    )
+
+#    cooking_time = PositiveSmallIntegerField(
+#        verbose_name="Время приготовления",
+#        default=0,
+#        validators=(
+#            MinValueValidator(
+#                Limits.MIN_COOKING_TIME.value,
+#                "Ваше блюдо уже готово!",
+#            ),
+#            MaxValueValidator(
+#                Limits.MAX_COOKING_TIME.value,
+#                "Очень долго ждать...",
+#            ),
+#        ),
+#    )
 #
 #    class Meta:
 #        ordering = ('-pub_date',)
