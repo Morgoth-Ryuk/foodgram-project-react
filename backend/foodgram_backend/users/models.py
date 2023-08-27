@@ -135,8 +135,3 @@ class Subscriptions(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user.username} -> {self.author.username}'
-    #def __str__(self):
-        #return '{user}, {author}'.format(
-            #author=self.author.username,
-           # user=self.user.username
-        #)
