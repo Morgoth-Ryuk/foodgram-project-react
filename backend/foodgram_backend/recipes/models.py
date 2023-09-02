@@ -1,6 +1,14 @@
+from PIL import Image
 from django.db import models
 from django.contrib.auth import get_user_model
 from users.models import User
+####
+from core.enums import Tuples
+#from django.db.models.functions import Length
+#CharField.register_lookup(Length)
+
+
+
 
 
 class Tag(models.Model):
@@ -128,10 +136,21 @@ class Recipes(models.Model):
     def __str__(self) -> str:
         return f'{self.name}. Автор: {self.author.username}'
 
+    def clean(self) -> None:
+        self.name = self.name.capitalize()
+        return super().clean()
+
+    def save(self, *args, **kwargs) -> None:
+        super().save(*args, **kwargs)
+        image = Image.open(self.image.path)
+        image.thumbnail(Tuples.RECIPE_IMAGE_SIZE)
+        image.save(self.image.path)
+
 
 
 class RecipesIngredient(models.Model):
-    """Количество ингридиентов в блюде.
+    """
+    Количество ингридиентов в блюде.
     Модель связывает Recipe и Ingredient с указанием количества ингридиента.
     """
     recipes = models.ForeignKey(

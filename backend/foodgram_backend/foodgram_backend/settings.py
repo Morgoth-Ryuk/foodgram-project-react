@@ -12,7 +12,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -69,19 +68,19 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 DATABASES = {
     
-    'default': {
-    'ENGINE': 'django.db.backends.sqlite3',
-    'NAME': BASE_DIR / 'db.sqlite3',
-    }
-
     #'default': {
-    #    'ENGINE': 'django.db.backends.postgresql',
-    #    'NAME': os.getenv('POSTGRES_DB', 'django'),
-    #    'USER': os.getenv('POSTGRES_USER', 'django'),
-    #    'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-    #    'HOST': os.getenv('DB_HOST', ''),
-    #    'PORT': os.getenv('DB_PORT', 5432)
+    #'ENGINE': 'django.db.backends.sqlite3',
+    #'NAME': BASE_DIR / 'db.sqlite3',
     #}
+
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
+    }
 }
 
 
@@ -120,11 +119,11 @@ USE_TZ = True
 AUTH_USER_MODEL = 'users.User'
 
 
-FROM_EMAIL = 'YaMDB@ya.ru'
+#FROM_EMAIL = 'YaMDB@ya.ru'
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+#EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -142,19 +141,40 @@ MEDIA_ROOT = BASE_DIR / '/var/www/foodgram/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    #'DEFAULT_AUTHENTICATION_CLASSES': [
+    #    "rest_framework_simplejwt.authentication.JWTAuthentication",
+    #],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-    'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.'
-                                 'PageNumberPagination'),
-    "PAGE_SIZE": 10,
+    #'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.'
+                                 #'PageNumberPagination'),
+    #'PAGE_SIZE': 10,
 }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("Bearer",),
-}
+# SIMPLE_JWT = {
+    # "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    # "AUTH_HEADER_TYPES": ("Bearer",),
+# }
 
+PASSWORD_RESET_TIMEOUT = 60 * 60  # 1 hour
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'resipe': ('api.permissions.AuthorStaffOrReadOnly,',),
+        'recipe_list': ('api.permissions.AuthorStaffOrReadOnly',),
+        'user': ('api.permissions.OwnerUserOrReadOnly',),
+        'user_list': ('api.permissions.OwnerUserOrReadOnly',),
+    },
+    'SERIALIZERS': {
+        'user': 'api.serializers.UserSerializer',
+        'user_list': 'api.serializers.UserSerializer',
+        'current_user': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.UserSerializer',
+    },
+}

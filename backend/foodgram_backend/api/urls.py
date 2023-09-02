@@ -1,27 +1,32 @@
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib import admin
+#from django.conf import settings
+#from django.conf.urls.static import static
+#from django.contrib import admin
+#from api.views import (UserViewSet, get_jwt_token, registration)
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from api.views import (UserViewSet, get_jwt_token, registration)
+from api.views import (
+    BaseAPIRootView,
+    IngredientViewSet,
+    RecipeViewSet,
+    TagViewSet,
+    UserViewSet,
+)
 
+app_name = 'api'
 
-router = DefaultRouter()
-router.register(r'users', UserViewSet)
-#router.register(r'recipes', RecipesViewSet)
-#router.register(r'achievements', AchievementViewSet)
+class RuDefaultRouter(DefaultRouter):
+    """
+    Показывает описание главной страницы API на русском языке.
+    """
+    APIRootView = BaseAPIRootView
 
-auth_urls = [
-    path('signup/', registration, name='registration'),
-    path('token/', get_jwt_token, name='token'),
-]
+router = RuDefaultRouter()
+router.register('tags', TagViewSet, 'tags')
+router.register('ingredients', IngredientViewSet, 'ingredients')
+router.register('recipes', RecipeViewSet, 'recipes')
+router.register('users', UserViewSet, 'users')
 
-urlpatterns = [
+urlpatterns = (
     path('', include(router.urls)),
-    path('auth/', include(auth_urls)),
-]
-
-#if settings.DEBUG:
-    #urlpatterns += static(settings.MEDIA_URL,
-                          #document_root=settings.MEDIA_ROOT)
-
+    path('auth/', include('djoser.urls.authtoken')),
+)
