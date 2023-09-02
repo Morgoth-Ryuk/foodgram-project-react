@@ -25,7 +25,7 @@ class ShortRecipeSerializer(ModelSerializer):
 
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(ModelSerializer):
     """
     Сериализатор для модели User профилей.
     """
@@ -136,7 +136,7 @@ class RecipesSerializer(ModelSerializer):
     image = Base64ImageField()
 
     class Meta:
-        model = Recipe
+        model = Recipes
         fields = (
             'id',
             'tags',
@@ -185,7 +185,7 @@ class RecipesSerializer(ModelSerializer):
         return user.carts.filter(recipe=recipe).exists()
 
     @atomic
-    def create(self, validated_data: dict) -> Recipe:
+    def create(self, validated_data: dict) -> Recipes:
         """
         Создаёт рецепт.
         """
@@ -226,15 +226,15 @@ class RecipesSerializer(ModelSerializer):
 
 ########
 
-class RegistrationDataSerializer(UserSerializer):
-    """Права на доступ администратору и модератору либо только на чтение."""
+#class RegistrationDataSerializer(UserSerializer):
+    #"""Права на доступ администратору и модератору либо только на чтение."""
 
-    class Meta:
-        fields = ('username', 'email')
-        model = User
+    #class Meta:
+    #    fields = ('username', 'email')
+    #    model = User
 
 
-class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    confirmation_code = serializers.CharField()
+#class TokenSerializer(serializers.Serializer):
+    #username = serializers.CharField()
+    #confirmation_code = serializers.CharField()
 

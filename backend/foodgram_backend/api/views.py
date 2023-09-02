@@ -19,7 +19,7 @@ from django.http.response import HttpResponse
 from djoser.views import UserViewSet as DjoserUserViewSet
 
 from users.models import User, Subscriptions
-from recipes.models import Carts, Favorites, Ingredient, Recipes, Tag
+from recipes.models import Carts, FavoriteRecipes, Ingredient, Recipes, Tag
 from api.mixins import AddDelViewMixin
 from api.paginators import PageLimitPagination
 from api.permissions import (

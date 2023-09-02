@@ -15,7 +15,7 @@ from rest_framework.routers import APIRootView
         #)
 
 #########
-class AuthorStaffOrReadOnly(BanPermission):
+class AuthorStaffOrReadOnly(BasePermission):
     """
     Разрешение на изменение только для служебного персонала и автора.
     Остальным только чтение объекта.
@@ -32,7 +32,7 @@ class AuthorStaffOrReadOnly(BanPermission):
         )
 
 
-class AdminOrReadOnly(BanPermission):
+class AdminOrReadOnly(BasePermission):
     """
     Разрешение на создание и изменение только для админов.
     Остальным только чтение объекта.
@@ -49,7 +49,7 @@ class AdminOrReadOnly(BanPermission):
         )
 
 
-class OwnerUserOrReadOnly(BanPermission):
+class OwnerUserOrReadOnly(BasePermission):
     """
     Разрешение на создание и изменение только для админа и пользователя.
     Остальным только чтение объекта.
