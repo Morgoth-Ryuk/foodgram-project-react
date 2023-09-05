@@ -20,4 +20,4 @@ COPY . .
 # При старте контейнера запустить сервер разработки.
 # CMD ["python", "manage.py", "runserver", "0:8001"] 
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8001", "foodgram_backend.wsgi"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:8001", "foodgram_backend.wsgi"]
