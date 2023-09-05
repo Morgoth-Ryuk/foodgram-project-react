@@ -32,7 +32,7 @@ services:
   backend:
     container_name: foodgram-back
     # image: mellolissa/foodgram_back:latest
-    build: ../backend
+    build: ../backend/foodgram_backend
     env_file:
       - ../.env
     depends_on: 

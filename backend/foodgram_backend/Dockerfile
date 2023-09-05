@@ -1,9 +1,7 @@
 # Создать образ на основе базового слоя,
 # который содержит файлы ОС и интерпретатор Python 3.9.
-FROM python:3.9
+FROM python:3.10
 
-RUN apt-get update &&\
-    apt-get upgrade -y &&
 # Переходим в образе в директорию /app: в ней будем хранить код проекта.
 # Если директории с указанным именем нет, она будет создана. 
 # Название директории может быть любым.
@@ -15,12 +13,11 @@ WORKDIR /app
 COPY requirements.txt ./
 # Выполнить в текущей директории команду терминала
 # для установки зависимостей.
-RUN pip install -U pip &&\
-    pip install -r requirements.txt --no-cache-dir\
+RUN pip install -r requirements.txt --no-cache-dir\
     pip install gunicorn==20.1.0
 COPY . .
 
 # При старте контейнера запустить сервер разработки.
-# CMD ["python", "manage.py", "runserver", "0:9000"] 
+# CMD ["python", "manage.py", "runserver", "0:8001"] 
 
-CMD ["gunicorn", "--bind", "0.0.0.0:9000", "kittygram_backend.wsgi"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:8001", "foodgram_backend.wsgi"] 

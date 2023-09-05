@@ -119,7 +119,7 @@ jobs:
         with:
           context: ./nginx/
           push: true
-          tags: mellolissa/foodgram_nginx:latest
+          tags: mellolissa/foodgram-proxy:latest
   deploy:
     runs-on: ubuntu-latest
     needs: 
