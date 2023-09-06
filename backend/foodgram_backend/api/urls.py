@@ -9,8 +9,8 @@ from api.views import (
     IngredientViewSet,
     RecipeViewSet,
     TagViewSet,
-    # UserViewSet,
-    СustomUserViewSet,
+    UserViewSet,
+    # СustomUserViewSet,
     # registration,
     # get_jwt_token
 )
@@ -29,7 +29,7 @@ router = RuDefaultRouter()
 router.register('tags', TagViewSet, basename='tags')
 router.register('ingredients', IngredientViewSet, basename='ingredients')
 router.register('recipes', RecipeViewSet, basename='recipes')
-router.register(r'users', СustomUserViewSet, basename='users')
+router.register(r'users', UserViewSet, basename='users')
 
 urlpatterns = (
     path('', include(router.urls)),

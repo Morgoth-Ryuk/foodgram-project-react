@@ -30,9 +30,9 @@ site.site_header = 'Администрирование Foodgram'
 EMPTY_VALUE_DISPLAY = 'Значение не указано'
 
 
-# class IngredientInline(TabularInline):
-#     model = RecipesIngredient
-#     extra = 2
+class IngredientInline(TabularInline):
+    model = RecipesIngredient
+    extra = 2
 
 
 @register(RecipesIngredient)
