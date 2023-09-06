@@ -53,4 +53,3 @@ class AddDelViewMixin:
             )
 
         return Response(status=HTTP_204_NO_CONTENT)
-

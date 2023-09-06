@@ -6,15 +6,14 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission
 from rest_framework.routers import APIRootView
 
 
-#class IsAdminOrReadOnly(permissions.BasePermission):
-    #"""Права на доступ администратору либо только на чтение."""
-    #def has_permission(self, request, view):
-        #return (
-            #request.method in permissions.SAFE_METHODS
-            #or (request.user.is_authenticated and request.user.is_admin)
-        #)
+# class IsAdminOrReadOnly(permissions.BasePermission):
+    # """Права на доступ администратору либо только на чтение."""
+    # def has_permission(self, request, view):
+        # return (
+            # request.method in permissions.SAFE_METHODS
+            # or (request.user.is_authenticated and request.user.is_admin)
+        # )
 
-#########
 class AuthorStaffOrReadOnly(BasePermission):
     """
     Разрешение на изменение только для служебного персонала и автора.

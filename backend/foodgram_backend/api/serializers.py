@@ -10,7 +10,6 @@ from core.services import recipe_ingredients_set
 from recipes.models import Ingredient, Recipes, Tag
 
 
-
 class ShortRecipeSerializer(ModelSerializer):
     """
     Сериализатор для модели Recipes с укороченным набором полей.
@@ -20,9 +19,6 @@ class ShortRecipeSerializer(ModelSerializer):
         model = Recipes
         fields = 'id', 'name', 'image', 'cooking_time'
         read_only_fields = ('__all__',)
-
-
-
 
 
 class UserSerializer(ModelSerializer):
@@ -42,7 +38,7 @@ class UserSerializer(ModelSerializer):
             'last_name',
             'is_subscribed',
             'password',
-            )
+        )
         extra_kwargs = {'password': {'write_only': True}}
         read_only_fields = ("is_subscribed",)
     
@@ -94,11 +90,11 @@ class UserSubscribeSerializer(UserSerializer):
         )
         read_only_fields = ('__all__',)
 
-    #def get_is_subscribed(*args) -> bool:
-        #"""
-        #Проверка подписки пользователей.
-        #"""
-        #return True
+    # def get_is_subscribed(*args) -> bool:
+        # """
+        # Проверка подписки пользователей.
+        # """
+        # return True
 
     def get_recipes_count(self, obj: User) -> int:
         """
@@ -224,17 +220,16 @@ class RecipesSerializer(ModelSerializer):
 
 
 
-########
-
-#class RegistrationDataSerializer(UserSerializer):
-    #"""Права на доступ администратору и модератору либо только на чтение."""
-
-    #class Meta:
-    #    fields = ('username', 'email')
-    #    model = User
 
 
-#class TokenSerializer(serializers.Serializer):
-    #username = serializers.CharField()
-    #confirmation_code = serializers.CharField()
+# class RegistrationDataSerializer(UserSerializer):
+    # """Права на доступ администратору и модератору либо только на чтение."""
 
+    # class Meta:
+    #     fields = ('username', 'email')
+    #     model = User
+
+
+# class TokenSerializer(serializers.Serializer):
+    # username = serializers.CharField()
+    # confirmation_code = serializers.CharField()
