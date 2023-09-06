@@ -45,23 +45,23 @@ class Ingredient(models.Model):
     """
     name = models.CharField(
         'Название ингредиента',
-        max_length=100
+        max_length=50
     )
     measurement_unit = models.CharField(
         'Единицы измерения',
-        max_length=30
+        max_length=20
     )
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ('name',)
-        constraints = (
-            models.UniqueConstraint(
-                fields=('name', 'measurement_unit',),
-                name='unique_for_ingredient',
-            ),
-        )
+#        constraints = (
+#            models.UniqueConstraint(
+#                fields=('name', 'measurement_unit',),
+#                name='unique_for_ingredient',
+#            ),
+#        )
 
     def __str__(self) -> str:
         return f'{self.name} {self.measurement_unit}'
