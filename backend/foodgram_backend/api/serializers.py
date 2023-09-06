@@ -23,7 +23,7 @@ class ShortRecipeSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class MYUserSerializer(ModelSerializer):
+class MYUserSerializer(UserSerializer):
     """
     Сериализатор для модели User профилей.
     """

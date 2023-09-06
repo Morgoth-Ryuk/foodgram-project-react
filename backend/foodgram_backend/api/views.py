@@ -34,7 +34,7 @@ from api.serializers import (
     RecipesSerializer,
     ShortRecipeSerializer,
     TagSerializer,
-    UserSerializer,
+    MYUserSerializer,
     UserSubscribeSerializer,
     CustomUserCreateSerializer,
 )
@@ -93,29 +93,29 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
         return self.get_paginated_response(serializer.data)
 
 
-class СustomUserViewSet(UserViewSet):
-    """
-    Вьюсет для пользователей foodgram (переопределение стандартного в joser).
-    Эндпоинты:
-        * api/users/
-        * api/users/{id}/
-        * api/users/me/
-        * api/users/set_password/
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-    http_method_names = ['get', 'post']
+# class СustomUserViewSet(UserViewSet):
+#    """
+#    Вьюсет для пользователей foodgram (переопределение стандартного в joser).
+#    Эндпоинты:
+#        * api/users/
+#        * api/users/{id}/
+#        * api/users/me/
+#        * api/users/set_password/
+#    """
+#    queryset = User.objects.all()
+#    serializer_class = MYUserSerializer
+#    permission_classes = (IsAuthenticatedOrReadOnly, )
+#    http_method_names = ['get', 'post']
 
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return CustomUserCreateSerializer
-        return UserSerializer
+#    def get_serializer_class(self):
+#        if self.request.method == 'POST':
+#            return CustomUserCreateSerializer
+#        return MYUserSerializer
 
-    def get_permissions(self):
-        if self.action == 'me':
-            self.permission_classes = (IsAuthenticated, )
-        return super().get_permissions()
+#    def get_permissions(self):
+#        if self.action == 'me':
+#            self.permission_classes = (IsAuthenticated, )
+#        return super().get_permissions()
 
 
 class TagViewSet(ReadOnlyModelViewSet):

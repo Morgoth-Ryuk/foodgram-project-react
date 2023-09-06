@@ -30,9 +30,9 @@ site.site_header = 'Администрирование Foodgram'
 EMPTY_VALUE_DISPLAY = 'Значение не указано'
 
 
-class IngredientInline(TabularInline):
-    model = RecipesIngredient
-    extra = 2
+# class IngredientInline(TabularInline):
+#     model = RecipesIngredient
+#     extra = 2
 
 
 @register(RecipesIngredient)
@@ -42,11 +42,12 @@ class LinksAdmin(ModelAdmin):
 
 class IngredientResource(resources.ModelResource):
 
+
     class Meta:
         model = Ingredient
 
 
-# @register(Ingredient)
+@register(Ingredient)
 class IngredientAdmin(ImportExportActionModelAdmin):
     resource_class = IngredientResource
     list_display = [
@@ -56,8 +57,8 @@ class IngredientAdmin(ImportExportActionModelAdmin):
 #        'name',
 #         'measurement_unit',
 #     )
-    search_fields = ('name',)
-    list_filter = ('name',)
+#     search_fields = ('name',)
+#     list_filter = ('name',)
 
 #     save_on_top = True
 #     empty_value_display = EMPTY_VALUE_DISPLAY
@@ -160,4 +161,4 @@ class CardAdmin(ModelAdmin):
         return False
 
 
-admin.site.register(Ingredient, IngredientAdmin)
+# admin.site.register(Ingredient, IngredientAdmin)
