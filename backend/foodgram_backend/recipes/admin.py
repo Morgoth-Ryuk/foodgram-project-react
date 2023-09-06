@@ -1,7 +1,7 @@
-# from django.contrib import admin
+from django.contrib import admin
 # from recipes.models import *
-# from import_export.admin import ImportExportActionModelAdmin
-# from import_export import resources
+from import_export.admin import ImportExportActionModelAdmin
+from import_export import resources
 # from import_export import fields
 # from import_export.widgets import ForeignKeyWidget
 
@@ -40,12 +40,22 @@ class LinksAdmin(ModelAdmin):
     pass
 
 
-@register(Ingredient)
-class IngredientAdmin(ModelAdmin):
-    list_display = (
-        'name',
-        'measurement_unit',
-    )
+class IngredientResource(resources.ModelResource):
+
+    class Meta:
+        model = Ingredient
+
+
+# @register(Ingredient)
+class IngredientAdmin(ImportExportActionModelAdmin):
+    resource_class = IngredientResource
+    list_display = [
+        field.name for field in Ingredient._meta.fields if field.name != 'id'
+    ]
+#     list_display = (
+#        'name',
+#         'measurement_unit',
+#     )
     search_fields = ('name',)
     list_filter = ('name',)
 
@@ -148,3 +158,6 @@ class CardAdmin(ModelAdmin):
         self, request: WSGIRequest, obj: Carts | None = None
     ) -> bool:
         return False
+
+
+admin.site.register(Ingredient, IngredientAdmin)
