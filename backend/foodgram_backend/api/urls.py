@@ -10,6 +10,7 @@ from api.views import (
     RecipeViewSet,
     TagViewSet,
     UserViewSet,
+    СustomUserViewSet,
 )
 
 app_name = 'api'
@@ -26,7 +27,7 @@ router = RuDefaultRouter()
 router.register('tags', TagViewSet, 'tags')
 router.register('ingredients', IngredientViewSet, 'ingredients')
 router.register('recipes', RecipeViewSet, 'recipes')
-router.register('users', UserViewSet, 'users')
+router.register('users', СustomUserViewSet, 'users')
 
 urlpatterns = (
     path('', include(router.urls)),
