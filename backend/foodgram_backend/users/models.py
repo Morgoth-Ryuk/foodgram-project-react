@@ -21,7 +21,7 @@ class User(AbstractUser):
 
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
-        max_length=100, # MAX_LEN_EMAIL_FIELD
+        max_length=100,    # MAX_LEN_EMAIL_FIELD
         unique=True,
         help_text='Введите адрес электронной почты'
     )
@@ -31,7 +31,7 @@ class User(AbstractUser):
         unique=True,
         validators=[
             username_validator,
-            validate_username_me # добавить валидацию мин длины?
+            validate_username_me    # добавить валидацию мин длины?
         ]
     )
     first_name = models.CharField(

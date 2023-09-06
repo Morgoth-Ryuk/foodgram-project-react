@@ -76,8 +76,8 @@ class Recipes(models.Model):
         max_length=200
     )
     text = models.TextField(
-       verbose_name='Текст рецепта',
-       help_text='Введите описание рецепта'
+        verbose_name='Текст рецепта',
+        help_text='Введите описание рецепта'
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
