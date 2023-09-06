@@ -34,6 +34,7 @@ from api.serializers import (
     RecipesSerializer,
     ShortRecipeSerializer,
     TagSerializer,
+    UserSerializer,
     UserSubscribeSerializer,
 )
 from core.enums import Tuples, UrlQueries

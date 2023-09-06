@@ -1,5 +1,6 @@
 
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from django.core.exceptions import ValidationError
 from django.db.models import F, QuerySet
 from django.db.transaction import atomic
 from drf_extra_fields.fields import Base64ImageField
@@ -9,6 +10,7 @@ from core.services import recipe_ingredients_set
 from recipes.models import Ingredient, Recipes, Tag
 
 from djoser.serializers import UserCreateSerializer
+
 
 class ShortRecipeSerializer(ModelSerializer):
     """
@@ -37,9 +39,7 @@ class UserSerializer(ModelSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
-#             'password',
         )
-        
 
     def get_is_subscribed(self, obj: User) -> bool:
         """

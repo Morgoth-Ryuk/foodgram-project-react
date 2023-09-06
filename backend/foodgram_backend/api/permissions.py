@@ -6,14 +6,14 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission
 from rest_framework.routers import APIRootView
 
 
-
-class IsAuthenticatedOrReadOnly(permissions.BasePermission):
+class IsAuthenticatedOrReadOnly(BasePermission):
     """Права на доступ авторизованным юзерам либо только на чтение."""
     def has_permission(self, request, view):
         return (
-            request.method in permissions.SAFE_METHODS
+            request.method in SAFE_METHODS
             or request.user.is_authenticated
         )
+
 
 class AuthorStaffOrReadOnly(BasePermission):
     """
