@@ -3,8 +3,8 @@ version: '3'
 
 volumes:
   pg_data_prod:
-  static:
-  media:
+  static_volume:
+  media_volume:
 
 
 services:
@@ -19,14 +19,14 @@ services:
     depends_on:
       - db_prod
     volumes:
-      - static:/backend_static
-      - media:/var/www/foodgram/media/
+      - static_volume:/backend_static
+      - media_volume:/var/www/foodgram/media/
   frontend:
     image: mellolissa/foodgram_frontend:latest
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
-      - static:/static
+      - static_volume:/static
       #- ./frontend/:/app/build/
   nginx:
     image: mellolissa/foodgram-proxy
@@ -35,7 +35,7 @@ services:
       - backend
       - frontend
     volumes:
-      - static:/staticfiles/
-      - media:/var/www/foodgram/media/
+      - static_volume:/staticfiles/
+      - media_volume:/var/www/foodgram/media/
     ports:
       - 8001:80
