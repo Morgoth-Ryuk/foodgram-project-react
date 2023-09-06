@@ -2,22 +2,22 @@ version: '3'
 
 
 volumes:
-  pg_data:
+  pg_data_prod:
   static:
   media:
 
 
 services:
-  db:
+  db_prod:
     image: postgres:13.10
     env_file: .env
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data_prod:/var/lib/postgresql/data
   backend:
     image: mellolissa/foodgram_backend:latest
     env_file: .env
     depends_on:
-      - db
+      - db_prod
     volumes:
       - static:/backend_static
       - media:/var/www/foodgram/media/
