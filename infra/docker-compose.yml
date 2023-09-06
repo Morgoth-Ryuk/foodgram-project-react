@@ -21,7 +21,7 @@ services:
     container_name: foodgram-front
     env_file:
       - ../.env
-    # image: mellolissa/foodgram_front:latest
+    # image: mellolissa/foodgram_frontend:latest
     build: ../frontend
     command: cp -r /app/build/. /static/
     volumes:
@@ -30,8 +30,8 @@ services:
 
   
   foodgram_backend:
-    container_name: foodgram-back
-    # image: mellolissa/foodgram_back:latest
+    container_name: foodgram_backend
+    # image: mellolissa/foodgram_backend:latest
     build: ../backend/foodgram_backend
     env_file:
       - ../.env
