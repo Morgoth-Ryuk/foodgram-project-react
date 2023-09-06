@@ -18,10 +18,8 @@ djoser==2.1.0
 drf-extra-fields==3.2.1
 et-xmlfile==1.1.0
 flake8==6.0.0
-flake8-isort==6.0.0
 idna==3.4
 iniconfig==2.0.0
-isort==5.12.0
 itypes==1.2.0
 Jinja2==3.1.2
 MarkupPy==1.14
