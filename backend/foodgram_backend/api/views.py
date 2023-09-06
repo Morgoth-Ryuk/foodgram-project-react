@@ -27,7 +27,7 @@ from api.permissions import (
     AuthorStaffOrReadOnly,
     DjangoModelPermissions,
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
+    # IsAuthenticatedOrReadOnly,
 )
 from api.serializers import (
     IngredientSerializer,
@@ -36,7 +36,7 @@ from api.serializers import (
     TagSerializer,
     MYUserSerializer,
     UserSubscribeSerializer,
-    CustomUserCreateSerializer,
+    # CustomUserCreateSerializer,
 )
 from core.enums import Tuples, UrlQueries
 from core.services import create_shoping_list
@@ -58,7 +58,8 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
 
     pagination_class = PageLimitPagination
     permission_classes = (DjangoModelPermissions,)
-    add_serializer = UserSubscribeSerializer
+    add_serializer = MYUserSerializer
+    # UserSubscribeSerializer
     link_model = Subscriptions
 
     @action(detail=True, permission_classes=(IsAuthenticated,))

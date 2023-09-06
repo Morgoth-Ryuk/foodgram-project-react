@@ -1,4 +1,4 @@
-from django.contrib import admin
+# from django.contrib import admin
 # from recipes.models import *
 from import_export.admin import ImportExportActionModelAdmin
 from import_export import resources
@@ -41,7 +41,6 @@ class LinksAdmin(ModelAdmin):
 
 
 class IngredientResource(resources.ModelResource):
-
 
     class Meta:
         model = Ingredient
