@@ -18,8 +18,8 @@ class AddDelViewMixin:
 
     """
 
-    add_serializer: ModelSerializer | None = None
-    link_model: Model | None = None
+    add_serializer: "ModelSerializer | None" = None
+    link_model: "Model | None" = None
 
     def _create_relation(self, obj_id: int | str) -> Response:
         """
