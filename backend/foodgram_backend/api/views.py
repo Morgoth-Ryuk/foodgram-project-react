@@ -27,6 +27,7 @@ from api.permissions import (
     AuthorStaffOrReadOnly,
     DjangoModelPermissions,
     IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
 )
 from api.serializers import (
     IngredientSerializer,
@@ -88,6 +89,32 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
         )
         serializer = UserSubscribeSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
+
+
+class СustomUserViewSet(UserViewSet):
+    """
+    Вьюсет для пользователей foodgram (переопределение стандартного в joser).
+    Эндпоинты:
+        * api/users/
+        * api/users/{id}/
+        * api/users/me/
+        * api/users/set_password/
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = None                                         # TODO: лимитная пагинация
+    http_method_names = ['get', 'post']
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CustomUserCreateSerializer
+        return UserSerializer
+
+    def get_permissions(self):
+        if self.action == 'me':
+            self.permission_classes = (IsAuthenticated, )
+        return super().get_permissions()
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -223,88 +250,3 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
-
-# def send_confirmation_code(user):
-#    confirmation_code = default_token_generator.make_token(user)
-#    send_mail(
-#        subject='YaMDb registration',
-#        message=f'Your confirmation code: {confirmation_code}',
-#        from_email=FROM_EMAIL,
-#        recipient_list=[user.email],
-#    )
-
-
-# @api_view(['POST'])
-# @permission_classes([permissions.AllowAny])
-# def registration(request):
-#    """Регистрация нового пользователя."""
-#    username_check = request.data.get('username')
-#    email_check = request.data.get('email')
-#    if User.objects.filter(username=username_check,
-#                           email=email_check).exists():
-#        user_exists = get_object_or_404(
-#            User, username=username_check, email=email_check
-#        )
-#        serializer = RegistrationDataSerializer(user_exists)
-#        send_confirmation_code(user_exists)
-#        return Response(serializer.data, status=status.HTTP_200_OK)
-
-#    serializer = RegistrationDataSerializer(data=request.data)
-#    serializer.is_valid(raise_exception=True)
-#    serializer.save()
-#    user, created = User.objects.get_or_create(
-#        username=serializer.validated_data['username']
-#    )
-#    send_confirmation_code(user)
-#    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# @api_view(['POST'])
-# @permission_classes([permissions.AllowAny])
-# def get_jwt_token(request):
-#    """Выдача токена пользователю."""
-#    serializer = TokenSerializer(data=request.data)
-#    serializer.is_valid(raise_exception=True)
-#    user = get_object_or_404(
-#        User,
-#        username=serializer.validated_data['username']
-#    )
-#    if default_token_generator.check_token(
-#        user, serializer.validated_data['confirmation_code']
-#    ):
-#        token = AccessToken.for_user(user)
-#        return Response({'token': str(token)}, status=status.HTTP_200_OK)
-
-#   return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class UserViewSet(viewsets.ModelViewSet):
-#    """Вьюсет для обьектов модели User."""
-#    filter_backends = (filters.SearchFilter,)
-#    search_fields = ('username',)
-#    lookup_field = 'username'
-#    queryset = User.objects.all()
-#    serializer_class = UserSerializer
-#    permission_classes = (IsAdmin,)
-#    http_method_names = ['get', 'post', 'patch', 'delete']
-
-#    @action(
-#        methods=['get', 'patch'],
-#        detail=False,
-#        permission_classes=[permissions.IsAuthenticated],
-#        serializer_class=UserEditSerializer,
-#    )
-#    def me(self, request):
-#        user = request.user
-#        if request.method == 'GET':
-#            serializer = self.get_serializer(user)
-#            return Response(serializer.data, status=status.HTTP_200_OK)
-#        serializer = self.get_serializer(
-#            user,
-#            data=request.data,
-#            partial=True
-#        )
-#        serializer.is_valid(raise_exception=True)
-#        serializer.save()
-#        return Response(serializer.data, status=status.HTTP_200_OK)

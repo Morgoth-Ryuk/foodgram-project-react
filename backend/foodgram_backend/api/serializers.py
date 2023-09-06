@@ -8,6 +8,7 @@ from users.models import User
 from core.services import recipe_ingredients_set
 from recipes.models import Ingredient, Recipes, Tag
 
+from djoser.serializers import UserCreateSerializer
 
 class ShortRecipeSerializer(ModelSerializer):
     """
@@ -25,7 +26,7 @@ class UserSerializer(ModelSerializer):
     Сериализатор для модели User профилей.
     """
 
-    is_subscribed = SerializerMethodField()
+    is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -36,10 +37,9 @@ class UserSerializer(ModelSerializer):
             'first_name',
             'last_name',
             'is_subscribed',
-            'password',
+#             'password',
         )
-        extra_kwargs = {'password': {'write_only': True}}
-        read_only_fields = ("is_subscribed",)
+        
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -65,6 +65,31 @@ class UserSerializer(ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    """
+    Регистрация пользователя foodgram.
+    Переопределение дефолтного UserCreateSerializer в djoser.
+    Эндпоинты:
+        * POST api/users/
+    """
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password')
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def validate_username(self, value):
+        if value == "me":
+            raise ValidationError(
+                'Невозможно создать пользователя с указанным username'
+            )
+        return value
 
 
 class UserSubscribeSerializer(UserSerializer):
