@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-a=bbgdblbtl%f4e06a1)r30tsqgkjlm7v9=b&@son*%i!1^qhj
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['158.160.72.63', '127.0.0.1', 'localhost', 'cherkasovaproject13.ddns.net']
+ALLOWED_HOSTS = [*]
 
 # Application definition
 
