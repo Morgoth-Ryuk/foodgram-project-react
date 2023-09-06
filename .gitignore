@@ -131,3 +131,5 @@ dmypy.json
 # .idea
 .idea
 */migrations/
+./backend/foodgram_backend/recipes/migrations
+./backend/foodgram_backend/users/migrations
