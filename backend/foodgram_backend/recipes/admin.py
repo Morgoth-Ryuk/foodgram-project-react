@@ -124,12 +124,12 @@ class FavoriteRecipesAdmin(ModelAdmin):
     search_fields = ('user__username', 'recipes__name')
 
     def has_change_permission(
-        self, request: WSGIRequest, obj: FavoriteRecipes | None = None
+        self, request: WSGIRequest, obj: "FavoriteRecipes | None" = None
     ) -> bool:
         return False
 
     def has_delete_permission(
-        self, request: WSGIRequest, obj: FavoriteRecipes | None = None
+        self, request: WSGIRequest, obj: "FavoriteRecipes | None" = None
     ) -> bool:
         return False
 
@@ -140,11 +140,11 @@ class CardAdmin(ModelAdmin):
     search_fields = ('user__username', 'recipes__name')
 
     def has_change_permission(
-        self, request: WSGIRequest, obj: Carts | None = None
+        self, request: WSGIRequest, obj: "Carts | None" = None
     ) -> bool:
         return False
 
     def has_delete_permission(
-        self, request: WSGIRequest, obj: Carts | None = None
+        self, request: WSGIRequest, obj: "Carts | None" = None
     ) -> bool:
         return False
