@@ -9,7 +9,7 @@ from users.models import User
 from core.services import recipe_ingredients_set
 from recipes.models import Ingredient, Recipes, Tag
 
-from djoser.serializers import UserCreateSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer
 
 
 class ShortRecipeSerializer(ModelSerializer):
@@ -23,7 +23,7 @@ class ShortRecipeSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class UserSerializer(ModelSerializer):
+class MYUserSerializer(ModelSerializer):
     """
     Сериализатор для модели User профилей.
     """
@@ -40,6 +40,7 @@ class UserSerializer(ModelSerializer):
             'last_name',
             'is_subscribed',
         )
+        extra_kwargs = {"password": {"write_only": True}}
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -92,7 +93,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         return value
 
 
-class UserSubscribeSerializer(UserSerializer):
+class UserSubscribeSerializer(MYUserSerializer):
     """
     Вывод авторов на которых подписан текущий пользователь.
     """

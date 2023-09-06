@@ -9,8 +9,10 @@ from api.views import (
     IngredientViewSet,
     RecipeViewSet,
     TagViewSet,
-    UserViewSet,
+    # UserViewSet,
     СustomUserViewSet,
+    # registration,
+    # get_jwt_token
 )
 
 app_name = 'api'
@@ -24,12 +26,14 @@ class RuDefaultRouter(DefaultRouter):
 
 
 router = RuDefaultRouter()
-router.register('tags', TagViewSet, 'tags')
-router.register('ingredients', IngredientViewSet, 'ingredients')
-router.register('recipes', RecipeViewSet, 'recipes')
-router.register('users', СustomUserViewSet, 'users')
+router.register('tags', TagViewSet, basename='tags')
+router.register('ingredients', IngredientViewSet, basename='ingredients')
+router.register('recipes', RecipeViewSet, basename='recipes')
+router.register(r'users', СustomUserViewSet, basename='users')
 
 urlpatterns = (
     path('', include(router.urls)),
+    path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    # path('auth/', include('djoser.urls.authtoken')),
 )
