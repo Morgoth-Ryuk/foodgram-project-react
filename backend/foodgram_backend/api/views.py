@@ -36,6 +36,7 @@ from api.serializers import (
     TagSerializer,
     UserSerializer,
     UserSubscribeSerializer,
+    CustomUserCreateSerializer,
 )
 from core.enums import Tuples, UrlQueries
 from core.services import create_shoping_list
@@ -104,7 +105,6 @@ class СustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
-    pagination_class = None                                         # TODO: лимитная пагинация
     http_method_names = ['get', 'post']
 
     def get_serializer_class(self):
