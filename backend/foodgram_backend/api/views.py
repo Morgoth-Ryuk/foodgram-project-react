@@ -235,9 +235,9 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 #    )
 
 
-#@api_view(['POST'])
-#@permission_classes([permissions.AllowAny])
-#def registration(request):
+# @api_view(['POST'])
+# @permission_classes([permissions.AllowAny])
+# def registration(request):
 #    """Регистрация нового пользователя."""
 #    username_check = request.data.get('username')
 #    email_check = request.data.get('email')
@@ -260,9 +260,9 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 #    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-#@api_view(['POST'])
-#@permission_classes([permissions.AllowAny])
-#def get_jwt_token(request):
+# @api_view(['POST'])
+# @permission_classes([permissions.AllowAny])
+# def get_jwt_token(request):
 #    """Выдача токена пользователю."""
 #    serializer = TokenSerializer(data=request.data)
 #    serializer.is_valid(raise_exception=True)
@@ -279,7 +279,7 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 #   return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-#class UserViewSet(viewsets.ModelViewSet):
+# class UserViewSet(viewsets.ModelViewSet):
 #    """Вьюсет для обьектов модели User."""
 #    filter_backends = (filters.SearchFilter,)
 #    search_fields = ('username',)

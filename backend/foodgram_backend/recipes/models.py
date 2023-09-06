@@ -45,11 +45,11 @@ class Ingredient(models.Model):
     """
     name = models.CharField(
         'Название ингредиента',
-        max_length=50
+        max_length=100
     )
     measurement_unit = models.CharField(
         'Единицы измерения',
-        max_length=20
+        max_length=30
     )
 
     class Meta:
@@ -94,7 +94,7 @@ class Recipes(models.Model):
 
     tag = models.ManyToManyField(
         Tag,
-        #blank=True, null=True,
+        # blank=True, null=True,
         verbose_name='Тэг',
         related_name='recipes',
     )
@@ -103,7 +103,7 @@ class Recipes(models.Model):
         verbose_name='Картинка',
         upload_to='recipes/images/',
         blank=True,
-        #null=True,
+        # null=True,
     )
 
     ingredients = models.ManyToManyField(
@@ -116,7 +116,7 @@ class Recipes(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
         default=0,
-        #validators= ?
+        # validators= ?
     )
 
     class Meta:
@@ -164,7 +164,7 @@ class RecipesIngredient(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         default=0
-        #validators= min-max ?
+        # validators= min-max ?
     )
 
     class Meta:
