@@ -69,7 +69,7 @@ jobs:
     - name: Set up nodeJS
       uses: actions/setup-node@v3
       with:
-        node-version: 17
+        node-version: 13
 
     - name: Install dependencies
       run: |
@@ -116,7 +116,7 @@ jobs:
       - name: Push to DockerHub
         uses: docker/build-push-action@v4
         with:
-          context: ./nginx/
+          context: ./infra/
           push: true
           tags: mellolissa/foodgram-proxy:latest
   deploy:
