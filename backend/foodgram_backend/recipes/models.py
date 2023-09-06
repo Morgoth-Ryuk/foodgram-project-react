@@ -1,14 +1,11 @@
 from PIL import Image
 from django.db import models
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from users.models import User
 ####
 from core.enums import Tuples
-#from django.db.models.functions import Length
-#CharField.register_lookup(Length)
-
-
-
+# from django.db.models.functions import Length
+# CharField.register_lookup(Length)
 
 
 class Tag(models.Model):
@@ -65,6 +62,7 @@ class Ingredient(models.Model):
                 name='unique_for_ingredient',
             ),
         )
+
     def __str__(self) -> str:
         return f'{self.name} {self.measurement_unit}'
 
@@ -85,7 +83,6 @@ class Recipes(models.Model):
         verbose_name='Дата публикации',
         auto_now_add=True,
         editable=False,)
-   #quantity = DecimalField(decimal_places=10, max_digits=5)
     author = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -147,7 +144,6 @@ class Recipes(models.Model):
         image.save(self.image.path)
 
 
-
 class RecipesIngredient(models.Model):
     """
     Количество ингридиентов в блюде.
@@ -170,14 +166,14 @@ class RecipesIngredient(models.Model):
         default=0
         #validators= min-max ?
     )
-   
+
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Количество ингридиентов'
         ordering = ('recipes',)
         constraints = (
             models.UniqueConstraint(
-                fields=('recipes','ingredients'),
+                fields=('recipes', 'ingredients'),
                 name='Ingredient alredy added',
             ),
         )
@@ -216,13 +212,14 @@ class FavoriteRecipes(models.Model):
         verbose_name_plural = 'Избранные рецепты'
         constraints = (
             models.UniqueConstraint(
-                fields=('recipes','user'),
+                fields=('recipes', 'user'),
                 name='Recipe is favorite alredy',
             ),
         )
 
     def __str__(self) -> str:
         return f'{self.user} -> {self.recipe}'
+
 
 class Carts(models.Model):
     """
@@ -252,7 +249,7 @@ class Carts(models.Model):
         verbose_name_plural = 'Рецепты в списке покупок'
         constraints = (
             models.UniqueConstraint(
-                fields=('recipes','user'),
+                fields=('recipes', 'user'),
                 name='Recipe is cart alredy',
             ),
         )

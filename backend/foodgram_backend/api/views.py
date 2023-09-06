@@ -39,8 +39,6 @@ from core.enums import Tuples, UrlQueries
 from core.services import create_shoping_list
 
 
-
-
 class BaseAPIRootView(APIRootView):
     """Базовые пути API приложения."""
 
@@ -181,14 +179,14 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
     def recipe_to_favorites(
         self, request: WSGIRequest, pk: int | str
     ) -> Response:
-        self.link_model = Favorites
+        self.link_model = FavoriteRecipes
         return self._create_relation(pk)
 
     @favorite.mapping.delete
     def remove_recipe_from_favorites(
         self, request: WSGIRequest, pk: int | str
     ) -> Response:
-        self.link_model = Favorites
+        self.link_model = FavoriteRecipes
         return self._delete_relation(Q(recipe__id=pk))
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
@@ -227,11 +225,7 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
         return response
 
 
-
-
-
-################
-#def send_confirmation_code(user):
+# def send_confirmation_code(user):
 #    confirmation_code = default_token_generator.make_token(user)
 #    send_mail(
 #        subject='YaMDb registration',
@@ -314,4 +308,3 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 #        serializer.is_valid(raise_exception=True)
 #        serializer.save()
 #        return Response(serializer.data, status=status.HTTP_200_OK)
-

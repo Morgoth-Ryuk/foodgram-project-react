@@ -1,9 +1,9 @@
-import datetime as dt
-from django.core.validators import MaxValueValidator, MinValueValidator
+# import datetime as dt
+# from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-#from api_yamdb.settings import DEFAULT_LENGTH, LENGTH_USERNAME
+# from api_yamdb.settings import DEFAULT_LENGTH, LENGTH_USERNAME
 from django.core.exceptions import ValidationError
 
 
@@ -15,31 +15,23 @@ def validate_username_me(value):
 
 
 class User(AbstractUser):
-    #ADMIN = 'admin'
-    #MODERATOR = 'moderator'
-    #USER = 'user'
-    #ROLES = [
-        #(ADMIN, 'Administrator'),
-        #(MODERATOR, 'Moderator'),
-        #(USER, 'User'),
-    #]
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     username_validator = UnicodeUsernameValidator()
 
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
-        max_length=100, #MAX_LEN_EMAIL_FIELD
+        max_length=100, # MAX_LEN_EMAIL_FIELD
         unique=True,
         help_text='Введите адрес электронной почты'
     )
     username = models.CharField(
         verbose_name='Никнэйм пользователя',
-        max_length=100,   #LENGTH_USERNAME,
+        max_length=100,   # LENGTH_USERNAME,
         unique=True,
         validators=[
             username_validator,
-            validate_username_me #добавить валидацию мин длины?
+            validate_username_me # добавить валидацию мин длины?
         ]
     )
     first_name = models.CharField(
@@ -47,16 +39,16 @@ class User(AbstractUser):
         max_length=100,
         help_text='Введите Ваше имя',
         # validators=
-        ),
+    ),
     last_name = models.CharField(
         verbose_name='Фамилия пользователя',
         max_length=100,
         help_text='Введите Вашу Фамилию',
         #validators=
-        ),
+    ),
 
     password = models.CharField(
-        verbose_name='Пароль',   #_('Пароль'),
+        verbose_name='Пароль',   # _('Пароль'),
         max_length=128,
         help_text='Введите пароль',
     )
@@ -64,12 +56,6 @@ class User(AbstractUser):
         verbose_name='Подписан',
         default=False,
     )
-    #role = models.CharField(
-        #verbose_name='Роль',
-        #max_length=50,
-        #choices=ROLES,
-        #default=USER
-    #)
 
     class Meta:
         ordering = ['username']
@@ -85,7 +71,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return f'{self.username}: {self.email}'
-
 
     #@property
     #def is_moderator(self):
@@ -129,7 +114,9 @@ class Subscriptions(models.Model):
                 #name='unique_follow'
             ),
             models.CheckConstraint(
-                check=~models.Q(author=models.F('user')), name='\nNo self sibscription\n'
+                check=~models.Q(
+                    author=models.F('user')
+                ), name='\nNo self sibscription\n'
             ),
         )
 

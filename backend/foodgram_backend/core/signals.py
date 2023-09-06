@@ -8,7 +8,7 @@ from recipes.models import Recipes
 @receiver(post_delete, sender=Recipes)
 def delete_image(sender: Recipes, instance: Recipes, *a, **kw) -> None:
     """
-    Удаляет картинку при удаление рецепта. 
+    Удаляет картинку при удаление рецепта.
     """
     image = Path(instance.image.path)
     if image.exists():

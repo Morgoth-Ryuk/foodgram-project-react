@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from datetime import timedelta
+# from datetime import timedelta
 
 DATE_TIME_FORMAT = "%d/%m/%Y %H:%M"
 
@@ -68,10 +68,10 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 DATABASES = {
     
-    #'default': {
-    #'ENGINE': 'django.db.backends.sqlite3',
-    #'NAME': BASE_DIR / 'db.sqlite3',
-    #}
+    # 'default': {
+    # 'ENGINE': 'django.db.backends.sqlite3',
+    # 'NAME': BASE_DIR / 'db.sqlite3',
+    # }
 
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -119,11 +119,11 @@ USE_TZ = True
 AUTH_USER_MODEL = 'users.User'
 
 
-#FROM_EMAIL = 'YaMDB@ya.ru'
+# FROM_EMAIL = 'YaMDB@ya.ru'
 
-#EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-#EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+# EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -141,18 +141,18 @@ MEDIA_ROOT = BASE_DIR / '/var/www/foodgram/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    #'DEFAULT_AUTHENTICATION_CLASSES': [
-    #    "rest_framework_simplejwt.authentication.JWTAuthentication",
-    #],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-    #'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.'
+    # 'DEFAULT_PAGINATION_CLASS': ('rest_framework.pagination.'
                                  #'PageNumberPagination'),
-    #'PAGE_SIZE': 10,
+    # 'PAGE_SIZE': 10,
 }
 
 # SIMPLE_JWT = {

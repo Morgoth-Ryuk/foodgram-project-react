@@ -1,5 +1,4 @@
 
-from collections import OrderedDict
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from django.db.models import F, QuerySet
 from django.db.transaction import atomic
@@ -41,7 +40,7 @@ class UserSerializer(ModelSerializer):
         )
         extra_kwargs = {'password': {'write_only': True}}
         read_only_fields = ("is_subscribed",)
-    
+
     def get_is_subscribed(self, obj: User) -> bool:
         """
         Проверка подписки пользователей.
@@ -214,12 +213,6 @@ class RecipesSerializer(ModelSerializer):
 
         recipe.save()
         return recipe
-
-
-
-
-
-
 
 
 # class RegistrationDataSerializer(UserSerializer):
