@@ -2,9 +2,9 @@ version: '3'
 
 
 volumes:
-  pg_data_production:
-  static_volume:
-  media_volume:
+  pg_data:
+  static:
+  media:
 
 
 services:
@@ -12,21 +12,21 @@ services:
     image: postgres:13.10
     env_file: .env
     volumes:
-      - pg_data_production:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
   backend:
     image: mellolissa/foodgram_back:latest
     env_file: .env
     depends_on:
       - db
     volumes:
-      - static_volume:/backend_static
-      - media_volume:/var/www/foodgram/media/
+      - static:/backend_static
+      - media:/var/www/foodgram/media/
   frontend:
     image: mellolissa/foodgram_frontend:latest
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
-      - static_volume:/static
+      - static:/static
   nginx:
     image: mellolissa/foodgram-proxy
     env_file: .env
@@ -34,7 +34,7 @@ services:
       - backend
       - frontend
     volumes:
-      - static_volume:/staticfiles/
-      - media_volume:/var/www/foodgram/media/
+      - static:/staticfiles/
+      - media:/var/www/foodgram/media/
     ports:
       - 8001:80
