@@ -1,12 +1,7 @@
 from PIL import Image
 from django.db import models
-# from django.contrib.auth import get_user_model
 from users.models import User
-####
 from core.enums import Tuples
-# from django.db.models.functions import Length
-# CharField.register_lookup(Length)
-
 
 
 class Tag(models.Model):

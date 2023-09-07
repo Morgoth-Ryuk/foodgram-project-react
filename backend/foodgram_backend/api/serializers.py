@@ -39,9 +39,8 @@ class CustomUserSerializer(UserSerializer):
            'first_name',
            'last_name',
            'is_subscribed',
-       )
+        )
        extra_kwargs = {"password": {"write_only": True}}
-
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
