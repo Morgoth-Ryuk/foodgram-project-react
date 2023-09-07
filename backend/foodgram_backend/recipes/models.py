@@ -8,6 +8,7 @@ from core.enums import Tuples
 # CharField.register_lookup(Length)
 
 
+
 class Tag(models.Model):
     """
     Модель Tag.

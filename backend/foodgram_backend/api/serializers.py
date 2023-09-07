@@ -31,16 +31,17 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-        )
-        extra_kwargs = {"password": {"write_only": True}}
+       model = User
+       fields = (
+           'email',
+           'id',
+           'username',
+           'first_name',
+           'last_name',
+           'is_subscribed',
+       )
+       extra_kwargs = {"password": {"write_only": True}}
+
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -52,20 +53,6 @@ class CustomUserSerializer(UserSerializer):
             return False
 
         return user.subscriptions.filter(author=obj).exists()
-
-    def create(self, validated_data: dict) -> User:
-        """
-        Создаёт нового пользователя с запрошенными полями.
-        """
-        user = User(
-            email=validated_data['email'],
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -82,7 +69,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'username',
             'first_name',
             'last_name',
-            'password')
+            'password'
+        )
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_username(self, value):
@@ -99,7 +87,7 @@ class UserSubscribeSerializer(CustomUserSerializer):
     """
 
     recipe = ShortRecipeSerializer(many=True, read_only=True)
-    recipes_count = SerializerMethodField()
+    # recipes_count = SerializerMethodField()
 
     class Meta:
         model = User
@@ -111,15 +99,9 @@ class UserSubscribeSerializer(CustomUserSerializer):
             'last_name',
             'is_subscribed',
             'recipe',
-            'recipes_count',
+            # 'recipes_count',
         )
         read_only_fields = ('__all__',)
-
-    # def get_is_subscribed(*args) -> bool:
-        # """
-        # Проверка подписки пользователей.
-        # """
-        # return True
 
     def get_recipes_count(self, obj: User) -> int:
         """
@@ -239,16 +221,3 @@ class RecipesSerializer(ModelSerializer):
 
         recipe.save()
         return recipe
-
-
-# class RegistrationDataSerializer(UserSerializer):
-    # """Права на доступ администратору и модератору либо только на чтение."""
-
-    # class Meta:
-    #     fields = ('username', 'email')
-    #     model = User
-
-
-# class TokenSerializer(serializers.Serializer):
-    # username = serializers.CharField()
-    # confirmation_code = serializers.CharField()

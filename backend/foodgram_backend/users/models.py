@@ -27,35 +27,31 @@ class User(AbstractUser):
     )
     username = models.CharField(
         verbose_name='Никнэйм пользователя',
-        max_length=100,   # LENGTH_USERNAME,
+        max_length=20,   # LENGTH_USERNAME,
         unique=True,
         validators=[
             username_validator,
-            validate_username_me    # добавить валидацию мин длины?
+            validate_username_me
         ]
     )
     first_name = models.CharField(
-        verbose_name='Имя пользователя',
-        max_length=100,
-        help_text='Введите Ваше имя',
-        # validators=
-    ),
+        verbose_name='Имя',
+        max_length=20
+    )
     last_name = models.CharField(
-        verbose_name='Фамилия пользователя',
-        max_length=100,
-        help_text='Введите Вашу Фамилию',
-        #validators=
-    ),
+        verbose_name='Фамилия',
+        max_length=20
+    )
 
     password = models.CharField(
         verbose_name='Пароль',   # _('Пароль'),
         max_length=128,
         help_text='Введите пароль',
     )
-    is_subscribed = models.BooleanField(
-        verbose_name='Подписан',
-        default=False,
-    )
+    # is_subscribed = models.BooleanField(
+    #     verbose_name='Подписан',
+    #     default=False,
+    # )
 
     class Meta:
         ordering = ['username']
@@ -71,14 +67,6 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return f'{self.username}: {self.email}'
-
-    #@property
-    #def is_moderator(self):
-        #return self.role == self.MODERATOR
-
-    #@property
-    #def is_admin(self):
-        #return self.role == self.ADMIN or self.is_superuser
 
 
 class Subscriptions(models.Model):

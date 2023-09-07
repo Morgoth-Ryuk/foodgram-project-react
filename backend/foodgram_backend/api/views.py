@@ -35,9 +35,7 @@ from api.serializers import (
     RecipesSerializer,
     ShortRecipeSerializer,
     TagSerializer,
-    # CustomUserSerializer,
     UserSubscribeSerializer,
-    # CustomUserCreateSerializer,
 )
 from core.enums import Tuples, UrlQueries
 from core.services import create_shoping_list
@@ -57,13 +55,11 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
     возможность подписаться на автора рецепта.
     """
     serializer_class = UserSubscribeSerializer
-    # CustomUserSerializer
     http_method_names = ('get', 'post', 'delete')
     queryset = User.objects.all()
 
     pagination_class = PageLimitPagination
     permission_classes = (AllowAny,)
-    # add_serializer = UserSubscribeSerializer
     link_model = Subscriptions
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
@@ -96,31 +92,6 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
         )
         serializer = UserSubscribeSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
-
-
-# class СustomUserViewSet(UserViewSet):
-#    """
-#    Вьюсет для пользователей foodgram (переопределение стандартного в joser).
-#    Эндпоинты:
-#        * api/users/
-#        * api/users/{id}/
-#        * api/users/me/
-#        * api/users/set_password/
-#    """
-#    queryset = User.objects.all()
-#    serializer_class = MYUserSerializer
-#    permission_classes = (IsAuthenticatedOrReadOnly, )
-#    http_method_names = ['get', 'post']
-
-#    def get_serializer_class(self):
-#        if self.request.method == 'POST':
-#            return CustomUserCreateSerializer
-#        return MYUserSerializer
-
-#    def get_permissions(self):
-#        if self.action == 'me':
-#            self.permission_classes = (IsAuthenticated, )
-#        return super().get_permissions()
 
 
 class TagViewSet(ReadOnlyModelViewSet):
