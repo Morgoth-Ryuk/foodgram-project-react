@@ -31,16 +31,16 @@ class CustomUserSerializer(UserSerializer):
     is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
-       model = User
-       fields = (
-           'email',
-           'id',
-           'username',
-           'first_name',
-           'last_name',
-           'is_subscribed',
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
         )
-       extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {"password": {"write_only": True}}
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
