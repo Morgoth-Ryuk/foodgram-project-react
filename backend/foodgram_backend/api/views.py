@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.routers import APIRootView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.permissions import AllowAny
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Q, QuerySet
 from django.http.response import HttpResponse
@@ -25,7 +26,7 @@ from api.paginators import PageLimitPagination
 from api.permissions import (
     AdminOrReadOnly,
     AuthorStaffOrReadOnly,
-    DjangoModelPermissions,
+    # DjangoModelPermissions,
     IsAuthenticated,
     # IsAuthenticatedOrReadOnly,
 )
@@ -34,7 +35,7 @@ from api.serializers import (
     RecipesSerializer,
     ShortRecipeSerializer,
     TagSerializer,
-    MYUserSerializer,
+    # CustomUserSerializer,
     UserSubscribeSerializer,
     # CustomUserCreateSerializer,
 )
@@ -55,11 +56,14 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
     Для авторизованных пользователей —
     возможность подписаться на автора рецепта.
     """
+    serializer_class = UserSubscribeSerializer
+    # CustomUserSerializer
+    http_method_names = ('get', 'post', 'delete')
+    queryset = User.objects.all()
 
     pagination_class = PageLimitPagination
-    permission_classes = (DjangoModelPermissions,)
-    add_serializer = MYUserSerializer
-    # UserSubscribeSerializer
+    permission_classes = (AllowAny,)
+    # add_serializer = UserSubscribeSerializer
     link_model = Subscriptions
 
     @action(detail=True, permission_classes=(IsAuthenticated,))

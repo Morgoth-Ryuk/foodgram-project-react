@@ -23,7 +23,7 @@ class ShortRecipeSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class MYUserSerializer(UserSerializer):
+class CustomUserSerializer(UserSerializer):
     """
     Сериализатор для модели User профилей.
     """
@@ -93,7 +93,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         return value
 
 
-class UserSubscribeSerializer(MYUserSerializer):
+class UserSubscribeSerializer(CustomUserSerializer):
     """
     Вывод авторов на которых подписан текущий пользователь.
     """
