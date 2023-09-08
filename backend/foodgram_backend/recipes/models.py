@@ -169,7 +169,7 @@ class IngredientInRecipe(models.Model):
         return f'{self.amount} {self.ingredients}'
 
 
-class FavoriteRecipes(models.Model):
+class FavoriteRecipe(models.Model):
     """
     Модель избранных рецептов.
     """
@@ -181,7 +181,7 @@ class FavoriteRecipes(models.Model):
         help_text='Кто хочет подписаться',
     )
     recipes = models.ForeignKey(
-        Recipes,
+        Recipe,
         on_delete=models.CASCADE,
         related_name='in_favorites',
         verbose_name='Понравившиеся рецепты',
@@ -199,7 +199,7 @@ class FavoriteRecipes(models.Model):
         verbose_name_plural = 'Избранные рецепты'
         constraints = (
             models.UniqueConstraint(
-                fields=('recipes', 'user'),
+                fields=('recipe', 'user'),
                 name='Recipe is favorite alredy',
             ),
         )
@@ -214,7 +214,7 @@ class Carts(models.Model):
     """
 
     recipes = models.ForeignKey(
-        Recipes,
+        Recipe,
         verbose_name='Рецепты в списке покупок',
         related_name='in_carts',
         on_delete=models.CASCADE,
