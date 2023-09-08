@@ -133,3 +133,5 @@ dmypy.json
 */migrations/
 ./backend/foodgram_backend/recipes/migrations
 ./backend/foodgram_backend/users/migrations
+./backend/foodgram_backend/recipes/images
+.backend/foodgram_backend/recipes/images
