@@ -7,7 +7,6 @@ from django.contrib.admin import (
     register,
     site,
 )
-from django.core.handlers.wsgi import WSGIRequest
 from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
 from recipes.forms import TagForm
@@ -30,11 +29,6 @@ class IngredientInline(TabularInline):
     extra = 2
 
 
-@register(IngredientInRecipe)
-class LinksAdmin(ModelAdmin):
-    pass
-
-
 class IngredientResource(resources.ModelResource):
 
     class Meta:
@@ -47,24 +41,18 @@ class IngredientAdmin(ImportExportActionModelAdmin):
     list_display = [
         field.name for field in Ingredient._meta.fields if field.name != 'id'
     ]
-#     list_display = (
-#        'name',
-#         'measurement_unit',
-#     )
-#     search_fields = ('name',)
-#     list_filter = ('name',)
-
-#     save_on_top = True
-#     empty_value_display = EMPTY_VALUE_DISPLAY
 
 
 @register(Recipe)
 class RecipeAdmin(ModelAdmin):
     list_display = (
-        'name',
+        'id',
         'author',
-        'get_image',
-        'count_favorites',
+        'name',
+        'text',
+        'cooking_time',
+        'get_tags',
+        'count_favorites'
     )
     fields = (
         (
@@ -90,11 +78,15 @@ class RecipeAdmin(ModelAdmin):
     save_on_top = True
     empty_value_display = EMPTY_VALUE_DISPLAY
 
-    def get_image(self, obj):
-        return mark_safe(f'<img src={obj.image.url} width="80" hieght="30"')
+    @display(description='Тэги')
+    def get_tags(self, obj):
+        list_ = [tag.name for tag in obj.tags.all()]
+        return ', '.join(list_)
 
+    @display(description='В избранном')
     def count_favorites(self, obj):
         return obj.in_favorites.count()
+
 
 
 @register(Tag)

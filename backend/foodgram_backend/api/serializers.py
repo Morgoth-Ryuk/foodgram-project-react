@@ -128,31 +128,50 @@ class IngredientSerializer(ModelSerializer):
 
 
 class IngredientM2MSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all()
-    )
+    #ingredients = serializers.PrimaryKeyRelatedField(
+    #    queryset=Ingredient.objects.all()
+    #)
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     # amount = serializers.IntegerField()
 
     class Meta:
         fields = ('id', 'amount')
         model = IngredientInRecipe
-        read_only_fields = ('id',)
+        #read_only_fields = ('ingredients',)
 
 
-class RecipeGETSerializer(serializers.ModelSerializer):
-    """Сериализатор объектов класса Recipe при GET запросах."""
-    
-    tags = TagSerializer(many=True, read_only=True)
-    author = CustomUserSerializer(read_only=True)
-    IngredientM2MSerializer(many=True, source='ingredients_used')
-    #is_favorited = serializers.SerializerMethodField(read_only=True)
-    #is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    name = serializers.CharField(source='ingredient.name')
     amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientInRecipe
         fields = (
             'id',
+            'tags',
+            'author',
+            'ingredients',
+            'amount',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
+
+class RecipeReadSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов класса Recipe при GET запросах."""
+    
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+    author = CustomUserSerializer(read_only=True)
+    ingredients = IngredientM2MSerializer(many=True, source='ingredients_used')
+
+
+    class Meta:
+        model = Recipe
+        fields = (
             'tags',
             'author',
             'ingredients',
@@ -168,68 +187,53 @@ class RecipesCreateSerializer(ModelSerializer):
     Сериализатор для рецептов.
     Update/Create
     """
-
-    tags = TagSerializer(many=True, read_only=True)
-    #tags = serializers.PrimaryKeyRelatedField(
-    #    queryset=Tag.objects.all(), many=True
-    #)
-    author = UserSerializer(read_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
+    # id = serializers.IntegerField(source='ingredient.id')
+    author = CustomUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
     ingredients = IngredientM2MSerializer(many=True, source='ingredients_used') 
-    #is_favorited = SerializerMethodField()
-    #is_in_shopping_cart = SerializerMethodField()
-    image = Base64ImageField()
+    image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Recipe
-        fields = (
-            'id',
-            'tags',
-            'author',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time',
-            #'is_favorited',
-            #'is_in_shopping_cart',
-        )
-        #read_only_fields = (
-        #    'is_favorite',
-        #    'is_shopping_cart',
+        #fields = (
+            #'id',
+            #'tags',
+            #'author',
+            #'ingredients',
+            #'name',
+            #'image',
+            #'text',
+            #'cooking_time',
         #)
+        exclude = ('pub_date',)
+        #read_only_fields = ('author',)
+
 
     def create(self, validated_data):
         """
         Создаёт рецепт.
         """
         ingredients = validated_data.pop('ingredients_used')
-        # tags = validated_data.pop('tags')
+        tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
-        #recipe.tags.set(tags)
+        recipe.tags.set(tags)
 
         for ingredient in ingredients:
-            current_ingredient = ingredient.get('ingredient')
-            amount = ingredient.get('amount')
+            #current_ingredient = ingredient.get('id')
+            #amount = ingredient.get('amount')
             recipe.ingredients.add(
-                current_ingredient,
+                ingredient.get('id'),
                 through_defaults={
-                    'amount': amount,
+                    'amount': ingredient.get('amount'),
                 }
             )
         return recipe
-
-    def get_ingredients(self, recipe):
-        """
-        Получает список ингридиентов для рецепта.
-        """
-        ingredients = recipe.ingredients.values(
-            'id', 'name', 'measurement_unit', amount=F('recipe__amount')
-        )
-        return ingredients
     
     def to_representation(self, recipe):
         """Определяет какой сериализатор будет использоваться для чтения."""
-        serializer = RecipeGETSerializer(recipe)
+        serializer = RecipeReadSerializer(recipe)
         return serializer.data
 
     #def get_is_favorited(self, recipe: Recipes) -> bool:
