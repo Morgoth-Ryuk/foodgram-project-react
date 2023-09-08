@@ -2,7 +2,8 @@ from PIL import Image
 from django.db import models
 from users.models import User
 from core.const import Tuples
-
+from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator
 
 class Tag(models.Model):
     """
@@ -150,8 +151,8 @@ class IngredientInRecipe(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
-        default=0
-        # validators= min-max ?
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(120)]
     )
 
     class Meta:
@@ -199,7 +200,7 @@ class FavoriteRecipe(models.Model):
         verbose_name_plural = 'Избранные рецепты'
         constraints = (
             models.UniqueConstraint(
-                fields=('recipe', 'user'),
+                fields=('recipes', 'user'),
                 name='Recipe is favorite alredy',
             ),
         )

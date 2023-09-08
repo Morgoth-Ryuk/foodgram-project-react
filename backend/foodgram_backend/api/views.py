@@ -18,7 +18,7 @@ from django.http.response import HttpResponse
 from djoser.views import UserViewSet as DjoserUserViewSet
 
 from users.models import User, Subscription
-from recipes.models import Carts, FavoriteRecipes, Ingredient, Recipes, Tag
+from recipes.models import Carts, FavoriteRecipe, Ingredient, Recipe, Tag
 from api.mixins import AddDelViewMixin
 from api.paginators import PageLimitPagination
 from api.permissions import (
@@ -28,7 +28,7 @@ from api.permissions import (
 )
 from api.serializers import (
     IngredientSerializer,
-    RecipesSerializer,
+    RecipesCreateSerializer,
     ShortRecipeSerializer,
     TagSerializer,
     UserSubscribeSerializer,
@@ -124,8 +124,8 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
     Работает с рецептами.
     """
 
-    queryset = Recipes.objects.select_related('author')
-    serializer_class = RecipesSerializer
+    queryset = Recipe.objects.select_related('author')
+    serializer_class = RecipesCreateSerializer
     permission_classes = (AuthorStaffOrReadOnly,)
     pagination_class = PageLimitPagination
     add_serializer = ShortRecipeSerializer

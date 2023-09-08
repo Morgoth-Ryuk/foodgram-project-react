@@ -1,10 +1,5 @@
-# from django.contrib import admin
-# from recipes.models import *
 from import_export.admin import ImportExportActionModelAdmin
 from import_export import resources
-# from import_export import fields
-# from import_export.widgets import ForeignKeyWidget
-
 from django.contrib.admin import (
     ModelAdmin,
     TabularInline,
@@ -17,11 +12,11 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString, mark_safe
 from recipes.forms import TagForm
 from recipes.models import (
-    RecipesIngredient,
+    IngredientInRecipe,
     Carts,
-    FavoriteRecipes,
+    FavoriteRecipe,
     Ingredient,
-    Recipes,
+    Recipe,
     Tag,
 )
 
@@ -31,11 +26,11 @@ EMPTY_VALUE_DISPLAY = 'Значение не указано'
 
 
 class IngredientInline(TabularInline):
-    model = RecipesIngredient
+    model = IngredientInRecipe
     extra = 2
 
 
-@register(RecipesIngredient)
+@register(IngredientInRecipe)
 class LinksAdmin(ModelAdmin):
     pass
 
@@ -63,8 +58,8 @@ class IngredientAdmin(ImportExportActionModelAdmin):
 #     empty_value_display = EMPTY_VALUE_DISPLAY
 
 
-@register(Recipes)
-class RecipesAdmin(ModelAdmin):
+@register(Recipe)
+class RecipeAdmin(ModelAdmin):
     list_display = (
         'name',
         'author',
@@ -95,15 +90,11 @@ class RecipesAdmin(ModelAdmin):
     save_on_top = True
     empty_value_display = EMPTY_VALUE_DISPLAY
 
-    def get_image(self, obj: Recipes) -> SafeString:
+    def get_image(self, obj):
         return mark_safe(f'<img src={obj.image.url} width="80" hieght="30"')
 
-    get_image.short_description = 'Изображение'
-
-    def count_favorites(self, obj: Recipes) -> int:
+    def count_favorites(self, obj):
         return obj.in_favorites.count()
-
-    count_favorites.short_description = 'В избранном'
 
 
 @register(Tag)
@@ -125,39 +116,16 @@ class TagAdmin(ModelAdmin):
             '<span style="color: #{};">{}</span>', obj.color[1:], obj.color
         )
 
-    color_code.short_description = 'Цветовой код тэга'
 
-
-@register(FavoriteRecipes)
+@register(FavoriteRecipe)
 class FavoriteRecipesAdmin(ModelAdmin):
     list_display = ('user', 'recipes', 'date_added')
-    search_fields = ('user__username', 'recipes__name')
+    search_fields = ('user__username', 'recipe__name')
 
-    def has_change_permission(
-        self, request: WSGIRequest, obj: FavoriteRecipes | None = None
-    ) -> bool:
-        return False
-
-    def has_delete_permission(
-        self, request: WSGIRequest, obj: FavoriteRecipes | None = None
-    ) -> bool:
-        return False
 
 
 @register(Carts)
 class CardAdmin(ModelAdmin):
     list_display = ('user', 'recipes', 'date_added')
-    search_fields = ('user__username', 'recipes__name')
+    search_fields = ('user__username', 'recipe__name')
 
-    def has_change_permission(
-        self, request: WSGIRequest, obj: Carts | None = None
-    ) -> bool:
-        return False
-
-    def has_delete_permission(
-        self, request: WSGIRequest, obj: Carts | None = None
-    ) -> bool:
-        return False
-
-
-# admin.site.register(Ingredient, IngredientAdmin)

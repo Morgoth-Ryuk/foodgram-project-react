@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from django.apps import apps
 from django.db.models import F, Sum
 from foodgram_backend.settings import DATE_TIME_FORMAT
-from recipes.models import RecipesIngredient, Recipes
+from recipes.models import IngredientInRecipe, Recipe
 
 if TYPE_CHECKING:
     from recipes.models import Ingredient
@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 
 
 def recipe_ingredients_set(recipe,ingredients):
-    #recipe: Recipes, ingredients: dict[int, tuple['Ingredient', int]]
-#) -> None:
     """
     Записывает ингредиенты вложенные в рецепт.
     """
@@ -25,15 +23,15 @@ def recipe_ingredients_set(recipe,ingredients):
 
     for ingredient, amount in ingredients.values():
         objs.append(
-            RecipesIngredient(
+            IngredientInRecipe(
                 recipe=recipe, ingredients=ingredient, amount=amount
             )
         )
 
-    RecipesIngredient.objects.bulk_create(objs)
+    IngredientInRecipe.objects.bulk_create(objs)
 
 
-def create_shoping_list(user: 'User') -> str:
+def create_shoping_list(user):
     """
     Сфомировать список ингридкетов для покупки.
     """

@@ -18,7 +18,7 @@ class User(AbstractUser):
 
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
-        max_length=254,
+        max_length=100,
         unique=True,
         help_text='Введите адрес электронной почты'
     )
@@ -41,7 +41,7 @@ class User(AbstractUser):
     )
 
     password = models.CharField(
-        verbose_name='Пароль',
+        verbose_name='Пароль',   # _('Пароль'),
         max_length=128,
         help_text='Введите пароль',
     )
@@ -64,6 +64,7 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return f'{self.username}: {self.email}'
+
 
 
 class Subscription(models.Model):
