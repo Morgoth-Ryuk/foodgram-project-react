@@ -12,6 +12,7 @@ from recipes.models import Ingredient, Recipes, Tag
 from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
 
+
 class ShortRecipeSerializer(ModelSerializer):
     """
     Сериализатор для модели Recipes с укороченным набором полей.
@@ -130,8 +131,10 @@ class IngredientSerializer(ModelSerializer):
 class RecipesSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
 
-    #tags = TagSerializer(many=True, read_only=True)
-    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
+    # tags = TagSerializer(many=True, read_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
     author = UserSerializer(read_only=True)
     ingredients = SerializerMethodField()
     is_favorited = SerializerMethodField()
