@@ -1,9 +1,6 @@
-# import datetime as dt
-# from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-# from api_yamdb.settings import DEFAULT_LENGTH, LENGTH_USERNAME
 from django.core.exceptions import ValidationError
 
 
@@ -21,13 +18,13 @@ class User(AbstractUser):
 
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
-        max_length=100,    # MAX_LEN_EMAIL_FIELD
+        max_length=254,
         unique=True,
         help_text='Введите адрес электронной почты'
     )
     username = models.CharField(
         verbose_name='Никнэйм пользователя',
-        max_length=20,   # LENGTH_USERNAME,
+        max_length=20,
         unique=True,
         validators=[
             username_validator,
@@ -44,7 +41,7 @@ class User(AbstractUser):
     )
 
     password = models.CharField(
-        verbose_name='Пароль',   # _('Пароль'),
+        verbose_name='Пароль',
         max_length=128,
         help_text='Введите пароль',
     )
@@ -69,7 +66,7 @@ class User(AbstractUser):
         return f'{self.username}: {self.email}'
 
 
-class Subscriptions(models.Model):
+class Subscription(models.Model):
     """
     Подписки пользователей друг на друга.
     """
@@ -98,13 +95,12 @@ class Subscriptions(models.Model):
         constraints = (
             models.UniqueConstraint(
                 fields=('author', 'user'),
-                name='\nRepeat subscription\n',
-                #name='unique_follow'
+                name='unique_follow',
             ),
             models.CheckConstraint(
                 check=~models.Q(
                     author=models.F('user')
-                ), name='\nNo self sibscription\n'
+                ), name='self sibscription'
             ),
         )
 

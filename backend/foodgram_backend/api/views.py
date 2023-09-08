@@ -10,25 +10,21 @@
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.routers import APIRootView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.permissions import AllowAny
-from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Q, QuerySet
 from django.http.response import HttpResponse
 from djoser.views import UserViewSet as DjoserUserViewSet
 
-from users.models import User, Subscriptions
+from users.models import User, Subscription
 from recipes.models import Carts, FavoriteRecipes, Ingredient, Recipes, Tag
 from api.mixins import AddDelViewMixin
 from api.paginators import PageLimitPagination
 from api.permissions import (
     AdminOrReadOnly,
     AuthorStaffOrReadOnly,
-    # DjangoModelPermissions,
     IsAuthenticated,
-    # IsAuthenticatedOrReadOnly,
 )
 from api.serializers import (
     IngredientSerializer,
@@ -37,12 +33,8 @@ from api.serializers import (
     TagSerializer,
     UserSubscribeSerializer,
 )
-from core.enums import Tuples, UrlQueries
+from core.const import Tuples, UrlQueries
 from core.services import create_shoping_list
-
-
-class BaseAPIRootView(APIRootView):
-    """Базовые пути API приложения."""
 
 
 class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
@@ -60,30 +52,26 @@ class UserViewSet(DjoserUserViewSet, AddDelViewMixin):
 
     pagination_class = PageLimitPagination
     permission_classes = (AllowAny,)
-    link_model = Subscriptions
+    link_model = Subscription
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
-    def subscribe(self, request: WSGIRequest, id: int | str) -> Response:
+    def subscribe(self, request, id):
         """
         Создаёт/удалет связь между пользователями.
         """
 
     @subscribe.mapping.post
-    def create_subscribe(
-        self, request: WSGIRequest, id: int | str
-    ) -> Response:
+    def create_subscribe(self, request, id):
         return self._create_relation(id)
 
     @subscribe.mapping.delete
-    def delete_subscribe(
-        self, request: WSGIRequest, id: int | str
-    ) -> Response:
+    def delete_subscribe(self, request, id):
         return self._delete_relation(Q(author__id=id))
 
     @action(
         methods=('get',), detail=False, permission_classes=(IsAuthenticated,)
     )
-    def subscriptions(self, request: WSGIRequest) -> Response:
+    def subscriptions(self, request):
         """
         Список подписок пользоваетеля.
         """
@@ -113,7 +101,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (AdminOrReadOnly,)
 
-    def get_queryset(self) -> list[Ingredient]:
+    def get_queryset(self):
         """
         Получение queryset в соответствии с параметрами запроса.
         """
@@ -142,7 +130,7 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
     pagination_class = PageLimitPagination
     add_serializer = ShortRecipeSerializer
 
-    def get_queryset(self) -> QuerySet[Recipes]:
+    def get_queryset(self):
         """
         Получение queryset в соответствии с параметрами запроса.
         """
@@ -174,45 +162,39 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
         return queryset
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
-    def favorite(self, request: WSGIRequest, pk: int | str) -> Response:
+    def favorite(self, request, pk) :
         """
         Добавляем/удалем рецепт в `избранное`.
         """
 
     @favorite.mapping.post
-    def recipe_to_favorites(
-        self, request: WSGIRequest, pk: int | str
-    ) -> Response:
+    def recipe_to_favorites(self, request, pk):
         self.link_model = FavoriteRecipes
         return self._create_relation(pk)
 
     @favorite.mapping.delete
-    def remove_recipe_from_favorites(
-        self, request: WSGIRequest, pk: int | str
-    ) -> Response:
+    def remove_recipe_from_favorites(self, request, pk):
         self.link_model = FavoriteRecipes
         return self._delete_relation(Q(recipe__id=pk))
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
-    def shopping_cart(self, request: WSGIRequest, pk: int | str) -> Response:
+    def shopping_cart(self, request, pk):
         """
         Добавляем/удалем рецепт в `список покупок`.
         """
 
     @shopping_cart.mapping.post
-    def recipe_to_cart(self, request: WSGIRequest, pk: int | str) -> Response:
+    def recipe_to_cart(self, request, pk):
         self.link_model = Carts
         return self._create_relation(pk)
 
     @shopping_cart.mapping.delete
-    def remove_recipe_from_cart(
-        self, request: WSGIRequest, pk: int | str
-    ) -> Response:
+    def remove_recipe_from_cart(self, request, pk):
         self.link_model = Carts
         return self._delete_relation(Q(recipe__id=pk))
 
     @action(methods=('get',), detail=False)
-    def download_shopping_cart(self, request: WSGIRequest) -> Response:
+    def download_shopping_cart(self, request):
         """
         Формирует файл *.txt со списком покупок.
         """

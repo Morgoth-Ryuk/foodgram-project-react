@@ -1,7 +1,7 @@
 from PIL import Image
 from django.db import models
 from users.models import User
-from core.enums import Tuples
+from core.const import Tuples
 
 
 class Tag(models.Model):
@@ -15,12 +15,12 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Короткая ссылка',
-        max_length=50,
+        max_length=20,
         unique=True,
         db_index=False,
     )
     color = models.CharField(
-        verbose_name='Цвет',
+        verbose_name='Цвет в HEX',
         max_length=7,
         unique=True,
         db_index=False,
@@ -45,25 +45,19 @@ class Ingredient(models.Model):
     )
     measurement_unit = models.CharField(
         'Единицы измерения',
-        max_length=20
+        max_length=50
     )
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ('name',)
-#        constraints = (
-#            models.UniqueConstraint(
-#                fields=('name', 'measurement_unit',),
-#                name='unique_for_ingredient',
-#            ),
-#        )
 
     def __str__(self) -> str:
-        return f'{self.name} {self.measurement_unit}'
+        return f'{self.name}'
 
 
-class Recipes(models.Model):
+class Recipe(models.Model):
     """
     Модель рецептов.
     """
@@ -81,30 +75,27 @@ class Recipes(models.Model):
         editable=False,)
     author = models.ForeignKey(
         User,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name='Автор рецепта',
         help_text='Укажите автора рецепта',
         null=True,
     )
-
     tags = models.ManyToManyField(
         Tag,
         # blank=True, null=True,
         verbose_name='Тэг',
         related_name='recipes',
     )
-
     image = models.ImageField(
         verbose_name='Картинка',
         upload_to='recipes/images/',
         blank=True,
         # null=True,
     )
-
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipesIngredient',
+        through='IngredientInRecipe',
         verbose_name='Ингредиенты блюда',
         related_name='recipes',
     )
@@ -133,28 +124,28 @@ class Recipes(models.Model):
         self.name = self.name.capitalize()
         return super().clean()
 
-    def save(self, *args, **kwargs) -> None:
+    def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         image = Image.open(self.image.path)
         image.thumbnail(Tuples.RECIPE_IMAGE_SIZE)
         image.save(self.image.path)
 
 
-class RecipesIngredient(models.Model):
+class IngredientInRecipe(models.Model):
     """
     Количество ингридиентов в блюде.
     Модель связывает Recipe и Ingredient с указанием количества ингридиента.
     """
-    recipes = models.ForeignKey(
-        Recipes,
+    recipe = models.ForeignKey(
+        Recipe,
         verbose_name='В каких рецептах',
-        related_name='ingredient',
+        related_name='ingredients_used',
         on_delete=models.CASCADE,
     )
-    ingredients = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         verbose_name='Необходимые ингредиенты',
-        related_name='recipe',
+        related_name='recipes_used',
         on_delete=models.CASCADE,
     )
     amount = models.PositiveSmallIntegerField(
@@ -166,10 +157,10 @@ class RecipesIngredient(models.Model):
     class Meta:
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Количество ингридиентов'
-        ordering = ('recipes',)
+        ordering = ('recipe',)
         constraints = (
             models.UniqueConstraint(
-                fields=('recipes', 'ingredients'),
+                fields=('recipe', 'ingredient'),
                 name='Ingredient alredy added',
             ),
         )
