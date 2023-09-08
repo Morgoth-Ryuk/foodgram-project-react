@@ -1,5 +1,6 @@
 
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.db.models import F, QuerySet
 from django.db.transaction import atomic
@@ -10,7 +11,6 @@ from core.services import recipe_ingredients_set
 from recipes.models import Ingredient, Recipes, Tag, RecipesIngredient
 
 from djoser.serializers import UserSerializer, UserCreateSerializer
-from rest_framework import serializers
 
 
 class ShortRecipeSerializer(ModelSerializer):
@@ -130,6 +130,7 @@ class IngredientSerializer(ModelSerializer):
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    amount = serializers.IntegerField()
 
     class Meta:
         fields = ('amount', 'id')
@@ -139,16 +140,16 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 class RecipesSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
 
-    # tags = TagSerializer(many=True, read_only=True)
+    #tags = TagSerializer(many=True, read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
     author = UserSerializer(read_only=True)
-    ingredients = RecipeIngredientSerializer(many=True, source='recipes')
-    # SerializerMethodField()
-    is_favorited = SerializerMethodField()
-    is_in_shopping_cart = SerializerMethodField()
-    image = Base64ImageField()
+    ingredients = SerializerMethodField()
+    #ingredients = RecipeIngredientSerializer(many=True, source='recipe') 
+    #is_favorited = SerializerMethodField()
+    #is_in_shopping_cart = SerializerMethodField()
+    #image = Base64ImageField()
 
     class Meta:
         model = Recipes
@@ -157,19 +158,41 @@ class RecipesSerializer(ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            'is_favorited',
-            'is_in_shopping_cart',
             'name',
-            'image',
+            #'image',
             'text',
             'cooking_time',
+            #'is_favorited',
+            #'is_in_shopping_cart',
         )
-        read_only_fields = (
-            'is_favorite',
-            'is_shopping_cart',
-        )
+        #read_only_fields = (
+        #    'is_favorite',
+        #    'is_shopping_cart',
+        #)
+    
+    def to_representation(self, instance):
+        ingredients = super().to_representation(instance)
+        ingredients['ingredients'] = IngredientRecipeSerializer(
+            instance.recipe_ingredients.all(), many=True).data
+        return ingredients
 
-    def get_ingredients(self, recipe: Recipes) -> QuerySet[dict]:
+    @atomic
+    def create(self, validated_data):
+        # : dict) -> Recipes:
+        """
+        Создаёт рецепт.
+        """
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
+        recipe = Recipes.objects.create(**validated_data)
+        recipe.tags.set(tags)
+
+        recipe_ingredients_set(recipe, ingredients)
+        
+        return recipe
+
+    def get_ingredients(self, recipe):
+        #: Recipes) -> QuerySet[dict]:
         """
         Получает список ингридиентов для рецепта.
         """
@@ -178,39 +201,27 @@ class RecipesSerializer(ModelSerializer):
         )
         return ingredients
 
-    def get_is_favorited(self, recipe: Recipes) -> bool:
-        """
-        Проверка - находится ли рецепт в избранном.
-        """
-        user = self.context.get('view').request.user
+    #def get_is_favorited(self, recipe: Recipes) -> bool:
+    #    """
+    #    Проверка - находится ли рецепт в избранном.
+    #    """
+    #    user = self.context.get('view').request.user
 
-        if user.is_anonymous:
-            return False
-        return user.favorites.filter(recipe=recipe).exists()
+    #    if user.is_anonymous:
+    #        return False
+    #    return user.favorites.filter(recipe=recipe).exists()
 
-    def get_is_in_shopping_cart(self, recipe: Recipes) -> bool:
-        """
-        Проверка - находится ли рецепт в списке  покупок.
-        """
-        user = self.context.get('view').request.user
+    #def get_is_in_shopping_cart(self, recipe: Recipes) -> bool:
+    #    """
+    #    Проверка - находится ли рецепт в списке  покупок.
+    #    """
+    #    user = self.context.get('view').request.user
 
-        if user.is_anonymous:
-            return False
+    #    if user.is_anonymous:
+    #        return False
 
-        return user.carts.filter(recipe=recipe).exists()
+    #    return user.carts.filter(recipe=recipe).exists()
 
-    @atomic
-    def create(self, validated_data):
-        # : dict) -> Recipes:
-        """
-        Создаёт рецепт.
-        """
-        ingredients = validated_data.pop('recipes')
-        tags = validated_data.pop('tags')
-        recipe = Recipes.objects.create(**validated_data)
-        recipe.tags.set(tags)
-        recipe_ingredients_set(recipe, ingredients)
-        return recipe
 
     @atomic
     def update(self, recipe: Recipes, validated_data: dict):

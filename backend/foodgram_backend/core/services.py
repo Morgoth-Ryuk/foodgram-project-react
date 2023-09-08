@@ -15,9 +15,9 @@ if TYPE_CHECKING:
     from users.models import User
 
 
-def recipe_ingredients_set(
-    recipe: Recipes, ingredients: dict[int, tuple['Ingredient', int]]
-) -> None:
+def recipe_ingredients_set(recipe,ingredients):
+    #recipe: Recipes, ingredients: dict[int, tuple['Ingredient', int]]
+#) -> None:
     """
     Записывает ингредиенты вложенные в рецепт.
     """

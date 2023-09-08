@@ -88,7 +88,7 @@ class Recipes(models.Model):
         null=True,
     )
 
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         # blank=True, null=True,
         verbose_name='Тэг',

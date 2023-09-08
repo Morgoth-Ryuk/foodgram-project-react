@@ -132,7 +132,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / '/var/www/foodgram/media/'
+# MEDIA_ROOT = BASE_DIR / '/var/www/foodgram/media/'
 
 
 # Default primary key field type
@@ -142,7 +142,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -153,12 +152,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-# SIMPLE_JWT = {
-# "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-# "AUTH_HEADER_TYPES": ("Bearer",),
-# }
-
-PASSWORD_RESET_TIMEOUT = 60 * 60  # 1 hour
+PASSWORD_RESET_TIMEOUT = 60 * 360  
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
@@ -170,10 +164,7 @@ DJOSER = {
     },
     'SERIALIZERS': {
         'user': 'api.serializers.CustomUserSerializer',
-        # 'user_list': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',      # UserSerializerInTest
-        # 'user_create': 'api.serializers.UserSerializer',
-        # 'user_create': 'djoser.serializers.UserCreateSerializer'
+        'current_user': 'api.serializers.CustomUserSerializer', 
         'user_create': 'api.serializers.CustomUserCreateSerializer',
     },
 }

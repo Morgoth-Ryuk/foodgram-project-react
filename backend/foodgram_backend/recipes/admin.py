@@ -78,7 +78,7 @@ class RecipesAdmin(ModelAdmin):
         ),
         (
             'author',
-            'tag',
+            'tags',
         ),
         ('text',),
         ('image',),
@@ -87,9 +87,9 @@ class RecipesAdmin(ModelAdmin):
     search_fields = (
         'name',
         'author__username',
-        'tag__name',
+        'tags__name',
     )
-    list_filter = ('name', 'author__username', 'tag__name')
+    list_filter = ('name', 'author__username', 'tags__name')
 
     inlines = (IngredientInline,)
     save_on_top = True
