@@ -7,7 +7,7 @@ from drf_extra_fields.fields import Base64ImageField
 
 from users.models import User
 from core.services import recipe_ingredients_set
-from recipes.models import Ingredient, Recipes, Tag
+from recipes.models import Ingredient, Recipes, Tag, RecipesIngredient
 
 from djoser.serializers import UserSerializer, UserCreateSerializer
 from rest_framework import serializers
@@ -128,6 +128,14 @@ class IngredientSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
+class RecipeIngredientSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+
+    class Meta:
+        fields = ('amount', 'id')
+        model = RecipesIngredient
+
+
 class RecipesSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
 
@@ -136,7 +144,8 @@ class RecipesSerializer(ModelSerializer):
         queryset=Tag.objects.all(), many=True
     )
     author = UserSerializer(read_only=True)
-    ingredients = SerializerMethodField()
+    ingredients = RecipeIngredientSerializer(many=True, source='recipes')
+    # SerializerMethodField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
     image = Base64ImageField()
@@ -191,12 +200,13 @@ class RecipesSerializer(ModelSerializer):
         return user.carts.filter(recipe=recipe).exists()
 
     @atomic
-    def create(self, validated_data: dict) -> Recipes:
+    def create(self, validated_data):
+        # : dict) -> Recipes:
         """
         Создаёт рецепт.
         """
-        tags: list[int] = validated_data.pop('tags')
-        ingredients: dict[int, tuple] = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('recipes')
+        tags = validated_data.pop('tags')
         recipe = Recipes.objects.create(**validated_data)
         recipe.tags.set(tags)
         recipe_ingredients_set(recipe, ingredients)
