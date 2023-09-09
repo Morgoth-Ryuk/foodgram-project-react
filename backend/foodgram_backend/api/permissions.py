@@ -21,9 +21,7 @@ class AuthorStaffOrReadOnly(BasePermission):
     Остальным только чтение объекта.
     """
 
-    def has_object_permission(
-        self, request: WSGIRequest, view: APIRootView, obj: Model
-    ) -> bool:
+    def has_object_permission(self, request, view, obj: Model):
         return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated
@@ -38,9 +36,8 @@ class AdminOrReadOnly(BasePermission):
     Остальным только чтение объекта.
     """
 
-    def has_object_permission(
-        self, request: WSGIRequest, view: APIRootView
-    ) -> bool:
+    def has_object_permission(self, request, view, pk):
+        # pk добавила из-за просмотра инфы об одном теге
         return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated
@@ -55,9 +52,7 @@ class OwnerUserOrReadOnly(BasePermission):
     Остальным только чтение объекта.
     """
 
-    def has_object_permission(
-        self, request: WSGIRequest, view: APIRootView, obj: Model
-    ) -> bool:
+    def has_object_permission(self, request, view, obj: Model):
         return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated

@@ -29,7 +29,6 @@ from api.permissions import (
 from api.serializers import (
     IngredientSerializer,
     RecipesCreateSerializer,
-    ShortRecipeSerializer,
     TagSerializer,
     UserSubscribeSerializer,
     RecipeReadSerializer,
@@ -87,7 +86,6 @@ class TagViewSet(ReadOnlyModelViewSet):
     """
     Работает с тэгами.
     """
-
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AdminOrReadOnly,)
@@ -129,7 +127,6 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
     serializer_class = RecipesCreateSerializer
     permission_classes = [AuthorStaffOrReadOnly]
     pagination_class = PageLimitPagination
-    #add_serializer = ShortRecipeSerializer
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

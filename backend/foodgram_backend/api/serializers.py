@@ -12,17 +12,6 @@ from recipes.models import Ingredient, Recipe, Tag, IngredientInRecipe
 from djoser.serializers import UserSerializer, UserCreateSerializer
 
 
-class ShortRecipeSerializer(ModelSerializer):
-    """
-    Сериализатор для модели Recipes с укороченным набором полей.
-    """
-
-    class Meta:
-        model = Recipe
-        fields = 'id', 'name', 'image', 'cooking_time'
-        read_only_fields = ('__all__',)
-
-
 class CustomUserSerializer(UserSerializer):
     """
     Сериализатор для модели User профилей.
@@ -77,36 +66,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
                 'Невозможно создать пользователя с указанным username'
             )
         return value
-
-
-class UserSubscribeSerializer(CustomUserSerializer):
-    """
-    Вывод авторов на которых подписан текущий пользователь.
-    """
-
-    recipe = ShortRecipeSerializer(many=True, read_only=True)
-    # recipes_count = SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipe',
-            # 'recipes_count',
-        )
-        read_only_fields = ('__all__',)
-
-    def get_recipes_count(self, obj: User) -> int:
-        """
-        Подсчет общего количества рецептов у каждого автора.
-        """
-        return obj.recipes.count()
-
 
 
 class TagSerializer(ModelSerializer):
@@ -282,3 +241,31 @@ class RecipesCreateSerializer(ModelSerializer):
     #        return False
 
     #    return user.carts.filter(recipe=recipe).exists()
+
+class UserSubscribeSerializer(CustomUserSerializer):
+    """
+    Вывод авторов на которых подписан текущий пользователь.
+    """
+
+    recipe = RecipeReadSerializer(many=True, read_only=True)
+    # recipes_count = SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipe',
+            # 'recipes_count',
+        )
+        read_only_fields = ('__all__',)
+
+    def get_recipes_count(self, obj: User) -> int:
+        """
+        Подсчет общего количества рецептов у каждого автора.
+        """
+        return obj.recipes.count()
