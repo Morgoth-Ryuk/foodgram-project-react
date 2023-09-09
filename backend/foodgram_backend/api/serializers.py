@@ -40,7 +40,7 @@ class CustomUserSerializer(UserSerializer):
             'last_name',
             'is_subscribed',
         )
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {'password': {'write_only': True}}
 
     def get_is_subscribed(self, obj: User) -> bool:
         """
@@ -127,23 +127,11 @@ class IngredientSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
-class IngredientM2MSerializer(serializers.ModelSerializer):
-    #ingredients = serializers.PrimaryKeyRelatedField(
-    #    queryset=Ingredient.objects.all()
-    #)
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
-    # amount = serializers.IntegerField()
-
-    class Meta:
-        fields = ('id', 'amount')
-        model = IngredientInRecipe
-        #read_only_fields = ('ingredients',)
-
-
 class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     name = serializers.CharField(source='ingredient.name')
     amount = serializers.IntegerField()
+    #author = CustomUserSerializer(read_only=True)
 
     class Meta:
         model = IngredientInRecipe
@@ -166,7 +154,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(), many=True
     )
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientM2MSerializer(many=True, source='ingredients_used')
+    ingredients = RecipesIngredientsReadSerializer(many=True, source='ingredients_used')
 
 
     class Meta:
@@ -182,47 +170,54 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
 
+class IngredientM2MSerializer(serializers.ModelSerializer):
+    #ingredients = serializers.PrimaryKeyRelatedField(
+    #    queryset=Ingredient.objects.all()
+    #)
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
+
+    class Meta:
+        fields = ('id', 'amount')
+        model = IngredientInRecipe
+        read_only_fields = ('id',)
+
 class RecipesCreateSerializer(ModelSerializer):
     """
     Сериализатор для рецептов.
     Update/Create
     """
+    author = CustomUserSerializer(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    # id = serializers.IntegerField(source='ingredient.id')
-    author = CustomUserSerializer(read_only=True, default=serializers.CurrentUserDefault())
     ingredients = IngredientM2MSerializer(many=True, source='ingredients_used') 
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Recipe
-        #fields = (
-            #'id',
-            #'tags',
-            #'author',
-            #'ingredients',
-            #'name',
-            #'image',
-            #'text',
-            #'cooking_time',
-        #)
-        exclude = ('pub_date',)
-        #read_only_fields = ('author',)
-
+        fields = (
+            'tags',
+            'author',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
 
     def create(self, validated_data):
         """
         Создаёт рецепт.
         """
+        author = self.context.get('request').user
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
 
         for ingredient in ingredients:
-            #current_ingredient = ingredient.get('id')
-            #amount = ingredient.get('amount')
             recipe.ingredients.add(
                 ingredient.get('id'),
                 through_defaults={
@@ -231,10 +226,14 @@ class RecipesCreateSerializer(ModelSerializer):
             )
         return recipe
     
-    def to_representation(self, recipe):
-        """Определяет какой сериализатор будет использоваться для чтения."""
-        serializer = RecipeReadSerializer(recipe)
-        return serializer.data
+    #def to_representation(self, recipe):
+        #"""Определяет какой сериализатор будет использоваться для чтения."""
+        #serializer = RecipeReadSerializer(recipe)
+        #return serializer.data
+
+
+
+
 
     #def get_is_favorited(self, recipe: Recipes) -> bool:
     #    """
