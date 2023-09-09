@@ -188,7 +188,8 @@ class RecipesCreateSerializer(ModelSerializer):
     Сериализатор для рецептов.
     Update/Create
     """
-    author = CustomUserSerializer(read_only=True)
+    #author = CustomUserSerializer(read_only=True)
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
