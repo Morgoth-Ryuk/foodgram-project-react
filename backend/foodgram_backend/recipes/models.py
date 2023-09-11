@@ -170,7 +170,7 @@ class FavoriteRecipe(models.Model):
         related_name='favorites',
         verbose_name='Пользователь',
         help_text='Кто хочет подписаться',
-        default='Null',
+        default=0,
     )
     recipes = models.ForeignKey(
         Recipe,
@@ -218,7 +218,7 @@ class Carts(models.Model):
         verbose_name='Владелец списка покупок',
         related_name='carts',
         on_delete=models.CASCADE,
-        default='Null',
+        default=0,
     )
     date_added = models.DateTimeField(
         verbose_name='Дата добавления',
