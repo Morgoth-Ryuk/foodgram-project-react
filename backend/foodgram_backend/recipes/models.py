@@ -1,7 +1,6 @@
 from PIL import Image
 from django.db import models
 from users.models import User
-from core.const import Tuples
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
 
@@ -127,7 +126,7 @@ class Recipe(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         image = Image.open(self.image.path)
-        image.thumbnail(Tuples.RECIPE_IMAGE_SIZE)
+        image.thumbnail(500, 500)
         image.save(self.image.path)
 
 

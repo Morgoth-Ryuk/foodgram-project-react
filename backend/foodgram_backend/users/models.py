@@ -45,10 +45,10 @@ class User(AbstractUser):
         max_length=128,
         help_text='Введите пароль',
     )
-    # is_subscribed = models.BooleanField(
-    #     verbose_name='Подписан',
-    #     default=False,
-    # )
+    is_subscribed = models.BooleanField(
+        verbose_name='Подписан',
+        default=False,
+     )
 
     class Meta:
         ordering = ['username']

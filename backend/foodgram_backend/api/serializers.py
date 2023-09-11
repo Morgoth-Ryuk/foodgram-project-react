@@ -5,9 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import F, QuerySet
 from drf_extra_fields.fields import Base64ImageField
 from django.shortcuts import get_object_or_404
-from users.models import User
-from core.services import recipe_ingredients_set
-from recipes.models import Ingredient, Recipe, Tag, IngredientInRecipe
+from users.models import User, Subscription
+from recipes.models import Ingredient, Recipe, Tag, IngredientInRecipe, Carts
 
 from djoser.serializers import UserSerializer, UserCreateSerializer
 
@@ -17,7 +16,7 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User профилей.
     """
 
-    #is_subscribed = SerializerMethodField(read_only=True)
+    is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -27,7 +26,7 @@ class CustomUserSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            #'is_subscribed',
+            'is_subscribed',
         )
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -221,26 +220,40 @@ class RecipesCreateSerializer(ModelSerializer):
 
 
     
-    #def get_is_favorited(self, recipe: Recipes) -> bool:
-    #    """
-    #    Проверка - находится ли рецепт в избранном.
-    #    """
-    #    user = self.context.get('view').request.user
+    def get_is_favorited(self, recipe: Recipe):
+        """
+        Проверка - находится ли рецепт в избранном.
+        """
+        user = self.context.get('view').request.user
 
-    #    if user.is_anonymous:
-    #        return False
-    #    return user.favorites.filter(recipe=recipe).exists()
+        if user.is_anonymous:
+            return False
+        return user.favorites.filter(recipe=recipe).exists()
 
-    #def get_is_in_shopping_cart(self, recipe: Recipes) -> bool:
-    #    """
-    #    Проверка - находится ли рецепт в списке  покупок.
-    #    """
-    #    user = self.context.get('view').request.user
+    def get_is_in_shopping_cart(self, recipe: Recipe):
+        """
+        Проверка - находится ли рецепт в списке  покупок.
+        """
+        user = self.context.get('view').request.user
 
-    #    if user.is_anonymous:
-    #        return False
+        if user.is_anonymous:
+            return False
 
-    #    return user.carts.filter(recipe=recipe).exists()
+        return user.carts.filter(recipe=recipe).exists()
+
+
+class SubscriptionRecipeSerializer(ModelSerializer):
+    """Сериализатор для отображения рецептов в подписке."""
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+
 
 class UserSubscribeSerializer(CustomUserSerializer):
     """
@@ -248,7 +261,7 @@ class UserSubscribeSerializer(CustomUserSerializer):
     """
 
     recipe = RecipeReadSerializer(many=True, read_only=True)
-    # recipes_count = SerializerMethodField()
+    recipes_count = SerializerMethodField()
 
     class Meta:
         model = User
@@ -260,7 +273,7 @@ class UserSubscribeSerializer(CustomUserSerializer):
             'last_name',
             'is_subscribed',
             'recipe',
-            # 'recipes_count',
+            'recipes_count',
         )
         read_only_fields = ('__all__',)
 
@@ -269,3 +282,61 @@ class UserSubscribeSerializer(CustomUserSerializer):
         Подсчет общего количества рецептов у каждого автора.
         """
         return obj.recipes.count()
+
+
+
+class SubscriptionCreateSerializer(ModelSerializer):
+    """
+    Создание подписки.
+    """
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+
+
+class SubscriptionsSerializer(ModelSerializer):
+    """
+    Вывод ответа о совершении подписки.
+    """
+
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count')
+
+
+    def get_is_subscribed(self, obj):
+        """
+        Проставление отметки о подписке
+        """
+        return True
+
+    def get_recipes(self, obj):
+        author_recipes = obj.recipes.all()[:5]
+        return SubscriptionRecipeSerializer(
+            author_recipes, many=True
+        ).data
+
+    def get_recipes_count(self, obj):
+        """
+        Подсчет общего количества рецептов у каждого автора.
+        """
+        return obj.recipes.count()
+
+
+class CartSerializer(ModelSerializer):
+    """
+    Работа с корзиной покупок.
+    """
+    pass
