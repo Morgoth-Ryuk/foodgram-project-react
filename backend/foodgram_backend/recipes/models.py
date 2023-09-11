@@ -4,6 +4,7 @@ from users.models import User
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
 
+
 class Tag(models.Model):
     """
     Модель Tag.
@@ -122,12 +123,6 @@ class Recipe(models.Model):
     def clean(self) -> None:
         self.name = self.name.capitalize()
         return super().clean()
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        image = Image.open(self.image.path)
-        image.thumbnail(500, 500)
-        image.save(self.image.path)
 
 
 class IngredientInRecipe(models.Model):
