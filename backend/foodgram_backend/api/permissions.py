@@ -3,7 +3,6 @@ from django.db.models import Model
 from rest_framework.permissions import DjangoModelPermissions  # noqa F401
 from rest_framework.permissions import IsAuthenticated  # noqa F401
 from rest_framework.permissions import SAFE_METHODS, BasePermission
-from rest_framework.routers import APIRootView
 
 
 class IsAuthenticatedOrReadOnly(BasePermission):

@@ -6,7 +6,14 @@ from django.db.models import F, QuerySet
 from drf_extra_fields.fields import Base64ImageField
 from django.shortcuts import get_object_or_404
 from users.models import User, Subscription
-from recipes.models import Ingredient, Recipe, Tag, IngredientInRecipe, Carts
+from recipes.models import (
+    Ingredient,
+    Recipe,
+    Tag,
+    IngredientInRecipe,
+    Carts,
+    FavoriteRecipe
+)
 
 from djoser.serializers import UserSerializer, UserCreateSerializer
 
@@ -94,6 +101,15 @@ class RecipeInCartSerializer(ModelSerializer):
             'image',
             'cooking_time'
         )
+        read_only_fields = ('__all__',)
+
+
+class FavoriteRecipeSerializer(ModelSerializer):
+    """Сериализатор для модели FavoriteRecipe."""
+
+    class Meta:
+        model = FavoriteRecipe
+        fields = '__all__'
         read_only_fields = ('__all__',)
 
 
