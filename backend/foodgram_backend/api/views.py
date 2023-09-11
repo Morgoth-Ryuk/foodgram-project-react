@@ -27,6 +27,8 @@ from api.serializers import (
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
     SubscriptionsSerializer,
+    CartSerializer,
+    RecipeInCartSerializer
 )
 from api.services import create_shoping_list
 
@@ -145,19 +147,20 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 
     @action(detail=True,
             methods=['post', 'delete'],
+            url_path='shopping_cart',
+            url_name='shopping_cart',
             permission_classes=[IsAuthenticated])
-    def add_in_cart(self, request):
+    def add_in_cart(self, request, pk):
         """
-        Получить / Добавить / Удалить  рецепт
-        из списка покупок у текущего пользоватля.
+        Добавить/Удалить  рецепт из списка покупок.
         """
-        recipe = get_object_or_404(Recipe, id=self.request.get('pk'))
+        recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
 
         if request.method == 'POST':
             if Carts.objects.filter(
                 user=user,
-                recipe=recipe
+                recipes=recipe
             ).exists():
                 return Response(
                     {'errors': 'Рецепт уже добавлен!'},
@@ -166,8 +169,9 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
             serializer = CartSerializer(data=request.data)
 
             if serializer.is_valid(raise_exception=True):
-                serializer.save(user=user, recipe=recipe)
-                return Response(serializer.data,
+                serializer.save(user=user, recipes=recipe)
+                response_create = RecipeInCartSerializer(recipe)
+                return Response(response_create.data,
                                 status=status.HTTP_201_CREATED)
 
             return Response(serializer.errors,
@@ -175,19 +179,21 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
 
         if not Carts.objects.filter(
             user=user,
-            recipe=recipe
+            recipes=recipe
         ).exists():
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
                             
-        Carts.objects.get(recipe=recipe).delete()
-        return Response('Рецепт успешно удалён из списка покупок.',
-                        status=status.HTTP_204_NO_CONTENT)
+        Carts.objects.get(recipes=recipe).delete()
+        return Response({'errors': 'Рецепт успешно удалён из списка покупок.'},
+                        status=status.HTTP_200_OK)
 
 
     @action(
         methods=['get',],
         detail=False,
+        url_path='download_shopping_cart',
+        url_name='download_shopping_cart',
         permission_classes=[IsAuthenticated])
     def download_cart(self, request):
         """

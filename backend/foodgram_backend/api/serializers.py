@@ -85,6 +85,18 @@ class IngredientSerializer(ModelSerializer):
         read_only_fields = ('__all__',)
 
 
+class RecipeInCartSerializer(ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+        read_only_fields = ('__all__',)
+
+
 class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
