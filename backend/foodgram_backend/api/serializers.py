@@ -339,4 +339,28 @@ class CartSerializer(ModelSerializer):
     """
     Работа с корзиной покупок.
     """
-    pass
+    name = serializers.ReadOnlyField(
+        source='recipe.name',
+        read_only=True
+    )
+    image = serializers.ImageField(
+        source='recipe.image',
+        read_only=True
+    )
+    cooking_time = serializers.IntegerField(
+        source='recipe.cooking_time',
+        read_only=True
+    )
+    id = serializers.PrimaryKeyRelatedField(
+        source='recipe',
+        read_only=True
+    )
+
+    class Meta:
+        model = Carts
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )

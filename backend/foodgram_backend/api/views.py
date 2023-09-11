@@ -155,21 +155,31 @@ class RecipeViewSet(ModelViewSet, AddDelViewMixin):
         user = self.request.user
 
         if request.method == 'POST':
-            if Carts.objects.filter(author=user,
-                                           recipe=recipe).exists():
-                return Response({'errors': 'Рецепт уже добавлен!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            serializer = ShoppingCartSerializer(data=request.data)
+            if Carts.objects.filter(
+                user=user,
+                recipe=recipe
+            ).exists():
+                return Response(
+                    {'errors': 'Рецепт уже добавлен!'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = CartSerializer(data=request.data)
+
             if serializer.is_valid(raise_exception=True):
-                serializer.save(author=user, recipe=recipe)
+                serializer.save(user=user, recipe=recipe)
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED)
+
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
-        if not Carts.objects.filter(author=user,
-                                           recipe=recipe).exists():
+
+        if not Carts.objects.filter(
+            user=user,
+            recipe=recipe
+        ).exists():
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
+                            
         Carts.objects.get(recipe=recipe).delete()
         return Response('Рецепт успешно удалён из списка покупок.',
                         status=status.HTTP_204_NO_CONTENT)
