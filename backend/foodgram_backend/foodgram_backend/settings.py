@@ -74,12 +74,12 @@ DATABASES = {
     # }
 
     'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-       'NAME': os.getenv('POSTGRES_DB', 'django'),
-       'USER': os.getenv('POSTGRES_USER', 'django'),
-       'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-       'HOST': os.getenv('DB_HOST', ''),
-       'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
@@ -152,7 +152,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-PASSWORD_RESET_TIMEOUT = 60 * 360  
+PASSWORD_RESET_TIMEOUT = 60 * 360
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
@@ -164,7 +164,7 @@ DJOSER = {
     },
     'SERIALIZERS': {
         'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer', 
+        'current_user': 'api.serializers.CustomUserSerializer',
         'user_create': 'api.serializers.CustomUserCreateSerializer',
     },
 }

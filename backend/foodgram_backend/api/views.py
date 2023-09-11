@@ -42,7 +42,8 @@ from api.serializers import (
 )
 
 
-class UserViewSet(DjoserUserViewSet):   #, AddDelViewMixin):
+class UserViewSet(DjoserUserViewSet):
+    # , AddDelViewMixin):
     """
     Работа с пользователями.
     """
@@ -139,7 +140,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
         return list(start_queryset) + list(contain_queryset)
 
 
-class RecipeViewSet(ModelViewSet):    #, AddDelViewMixin):
+class RecipeViewSet(ModelViewSet):
+    # , AddDelViewMixin):
     """
     Работает с рецептами.
     """
