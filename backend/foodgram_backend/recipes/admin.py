@@ -8,7 +8,6 @@ from django.contrib.admin import (
     site,
 )
 from django.utils.html import format_html
-from django.utils.safestring import SafeString, mark_safe
 from recipes.forms import TagForm
 from recipes.models import (
     IngredientInRecipe,
@@ -88,7 +87,6 @@ class RecipeAdmin(ModelAdmin):
         return obj.in_favorites.count()
 
 
-
 @register(Tag)
 class TagAdmin(ModelAdmin):
     form = TagForm
@@ -115,9 +113,7 @@ class FavoriteRecipesAdmin(ModelAdmin):
     search_fields = ('user__username', 'recipe__name')
 
 
-
 @register(Carts)
 class CardAdmin(ModelAdmin):
     list_display = ('user', 'recipes', 'date_added')
     search_fields = ('user__username', 'recipe__name')
-

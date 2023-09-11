@@ -1,4 +1,3 @@
-from PIL import Image
 from django.db import models
 from users.models import User
 from django.core.validators import MinValueValidator
@@ -83,7 +82,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        # blank=True, null=True,
+        blank=True, null=True,
         verbose_name='Тэг',
         related_name='recipes',
     )
@@ -91,7 +90,6 @@ class Recipe(models.Model):
         verbose_name='Картинка',
         upload_to='recipes/images/',
         blank=True,
-        # null=True,
     )
     ingredients = models.ManyToManyField(
         Ingredient,

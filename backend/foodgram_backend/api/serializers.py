@@ -2,7 +2,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from django.db.models import F, QuerySet
 from drf_extra_fields.fields import Base64ImageField
 from django.shortcuts import get_object_or_404
 from users.models import User, Subscription
@@ -138,12 +137,12 @@ class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при GET запросах."""
-    
+
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = RecipesIngredientsReadSerializer(
-        many=True, 
-        read_only=True, 
+        many=True,
+        read_only=True,
         source='ingredients_used'
     )
 
@@ -181,7 +180,7 @@ class RecipesCreateSerializer(ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
-    ingredients = IngredientM2MSerializer(many=True, source='ingredients_used') 
+    ingredients = IngredientM2MSerializer(many=True, source='ingredients_used')
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -200,7 +199,6 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
-        author = self.context.get('request').user
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
@@ -214,7 +212,7 @@ class RecipesCreateSerializer(ModelSerializer):
                 }
             )
         return recipe
-    
+
     def to_representation(self, recipe):
         """Определяет какой сериализатор будет использоваться для чтения."""
         serializer = RecipeReadSerializer(recipe)
@@ -224,7 +222,6 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Обновляет рецепт.
         """
-        
         tags = validated_data.pop('tags', None)
         ingredients = validated_data.pop('ingredients_used', None)
 
@@ -237,7 +234,10 @@ class RecipesCreateSerializer(ModelSerializer):
             for ingredient in ingredients:
                 amount = ingredient.get('amount')
                 ingredient_instance = ingredient.get('id').id
-                ingredient = get_object_or_404(Ingredient, pk=ingredient_instance)
+                ingredient = get_object_or_404(
+                    Ingredient,
+                    pk=ingredient_instance
+                )
 
                 IngredientInRecipe.objects.update_or_create(
                     recipe=recipe,
@@ -246,8 +246,6 @@ class RecipesCreateSerializer(ModelSerializer):
                 )
         return super().update(recipe, validated_data)
 
-
-    
     def get_is_favorited(self, recipe: Recipe):
         """
         Проверка - находится ли рецепт в избранном.
@@ -312,7 +310,6 @@ class UserSubscribeSerializer(CustomUserSerializer):
         return obj.recipes.count()
 
 
-
 class SubscriptionCreateSerializer(ModelSerializer):
     """
     Создание подписки.
@@ -342,7 +339,6 @@ class SubscriptionsSerializer(ModelSerializer):
             'is_subscribed',
             'recipes',
             'recipes_count')
-
 
     def get_is_subscribed(self, obj):
         """

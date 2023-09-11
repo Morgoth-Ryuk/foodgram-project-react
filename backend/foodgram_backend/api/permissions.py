@@ -1,4 +1,3 @@
-from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Model
 from rest_framework.permissions import DjangoModelPermissions  # noqa F401
 from rest_framework.permissions import IsAuthenticated  # noqa F401
