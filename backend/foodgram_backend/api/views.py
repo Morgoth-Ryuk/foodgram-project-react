@@ -98,10 +98,8 @@ class UserViewSet(DjoserUserViewSet):
         """
         Список подписок пользоваетеля.
         """
-        pages = self.paginate_queryset(
-            User.objects.filter(subscribers__user=self.request.user)
-        )
-        serializer = UserSubscribeSerializer(pages, many=True)
+        queryset = User.objects.filter(subscribers__user=self.request.user)
+        serializer = UserSubscribeSerializer(queryset, many=True)
         return self.get_paginated_response(serializer.data)
 
 
@@ -185,9 +183,7 @@ class RecipeViewSet(ModelViewSet):
             )
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user, recipes=recipes)
-                # попробовать (user=user, recipes=recipes)
                 response_serializer = ShortRecipeSerializer(
-                #RecipeInFavoriteSerializer(   # !!!!!!!!!!!!!!!
                     recipes
                 )
                 return Response(
@@ -203,10 +199,6 @@ class RecipeViewSet(ModelViewSet):
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
 
-        # favorite_recipe = get_object_or_404(
-            # FavoriteRecipe, user=request.user, recipes=recipes
-        # )
-        # favorite_recipe.delete()
         FavoriteRecipe.objects.get(recipes=recipes).delete()
         return Response({'errors': 'Рецепт успешно удалён из избранного.'},
                         status=status.HTTP_200_OK)
@@ -237,7 +229,6 @@ class RecipeViewSet(ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=user, recipes=recipe)
                 response_create = ShortRecipeSerializer(recipe)
-                # RecipeInCartSerializer(recipe) !!!!!!!!!!!!!!
                 return Response(response_create.data,
                                 status=status.HTTP_201_CREATED)
 
@@ -294,21 +285,3 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
-
-# class SubscriptionViewSet(ModelViewSet):
-#     serializer_class = SubscriptionsSerializer
-#     permission_classes = (IsAuthenticated, AuthorStaffOrReadOnly)
-#     lookup_field = 'user'
-
-#     def get_queryset(self):
-#         return super().get_queryset().filter(user=self.request.user)
-
-
-# class FavoriteRecipeViewSet(ModelViewSet):
-#     serializer_class = FavoriteRecipeSerializer
-#     permission_classes = (AllowAny,)
-#     lookup_field = 'recipes'
-
-#     def get_queryset(self):
-#         return super().get_queryset().filter(user=self.request.user)

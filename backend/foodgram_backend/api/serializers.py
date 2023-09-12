@@ -109,7 +109,6 @@ class FavoriteRecipeSerializer(ModelSerializer):
         return True
 
 
-#class RecipeInFavoriteSerializer(ModelSerializer):
 class ShortRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для показа рецептов из избранного."""
 
@@ -124,12 +123,6 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
         read_only_fields = ('__all__',)
-
-    #def get_is_favorited(self, recipe: Recipe):
-    #    """
-    #    Отметка рецепт в избранном.
-    #    """
-    #    return True
 
 
 class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
