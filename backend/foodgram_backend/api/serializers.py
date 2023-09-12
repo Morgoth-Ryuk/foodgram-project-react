@@ -92,12 +92,34 @@ class RecipeInCartSerializer(ModelSerializer):
 
 
 class FavoriteRecipeSerializer(ModelSerializer):
-    """Сериализатор для модели FavoriteRecipe."""
+    """Сериализатор для записи рецепта в Избранное.
+    Работа с моделью FavoriteRecipe."""
     is_favorited = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FavoriteRecipe
         fields = '__all__'
+        read_only_fields = ('__all__',)
+
+    def get_is_favorited(self, recipe: Recipe):
+        """
+        Отметка рецепт в избранном.
+        """
+        return True
+
+
+class RecipeInFavoriteSerializer(ModelSerializer):
+    """Сериализатор для показа рецептов из избранного."""
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
         read_only_fields = ('__all__',)
 
     def get_is_favorited(self, recipe: Recipe):

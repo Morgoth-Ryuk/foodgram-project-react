@@ -38,7 +38,8 @@ from api.serializers import (
     SubscriptionsSerializer,
     CartSerializer,
     RecipeInCartSerializer,
-    FavoriteRecipeSerializer
+    FavoriteRecipeSerializer,
+    RecipeInFavoriteSerializer
 )
 
 
@@ -176,17 +177,19 @@ class RecipeViewSet(ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             serializer = FavoriteRecipeSerializer(
-                #data={'user': request.user.id,
-                # 'recipes': recipes.id} работало как-то = хз
-
+                data={
+                    'user': request.user.id,
+                    'recipes': recipes.id
+                }
                 # data={'user': request.user, 'recipes': recipes}
-                data=request.data
+                # data=request.data
             )
             if serializer.is_valid(raise_exception=True):
-                serializer.save()    # попробовать (user=user, recipes=recipes)
-                response_serializer = FavoriteRecipeSerializer(
-                    recipes, request.user
-                )   # recipes
+                serializer.save(user=request.user, recipes=recipes)
+                # попробовать (user=user, recipes=recipes)
+                response_serializer = RecipeInFavoriteSerializer(
+                    recipes
+                )
                 return Response(
                     response_serializer.data, status=status.HTTP_201_CREATED
                 )
