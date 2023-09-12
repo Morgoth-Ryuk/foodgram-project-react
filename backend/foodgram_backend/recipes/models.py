@@ -196,7 +196,7 @@ class FavoriteRecipe(models.Model):
         )
 
     def __str__(self) -> str:
-        return f'{self.user} -> {self.recipe}'
+        return f'{self.user} -> {self.recipes}'
 
 
 class Carts(models.Model):
