@@ -94,6 +94,7 @@ class RecipeInCartSerializer(ModelSerializer):
 class FavoriteRecipeSerializer(ModelSerializer):
     """Сериализатор для записи рецепта в Избранное.
     Работа с моделью FavoriteRecipe."""
+
     is_favorited = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -152,6 +153,7 @@ class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
         return obj.amount
 
 
+# READY
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при GET запросах."""
 
@@ -184,24 +186,26 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
-        user = self.context.get('view').request.user
+        request = self.context.get('request')
 
-        if user.is_anonymous:
+        if request is None or request.user.is_anonymous:
             return False
-        return user.favorites.filter(recipes=recipe).exists()
+        return FavoriteRecipe.objects.filter(
+            user=request.user, recipes=recipe
+        ).exists()
 
     def get_is_in_shopping_cart(self, recipe: Recipe):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
-        user = self.context.get('view').request.user
+        request = self.context.get('request')
 
-        if user.is_anonymous:
+        if request is None or request.user.is_anonymous:
             return False
+        return Carts.objects.filter(user=request.user, recipes=recipe).exists()
 
-        return user.carts.filter(recipes=recipe).exists()
 
-
+# READY
 class IngredientM2MSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
@@ -213,6 +217,7 @@ class IngredientM2MSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
+# READY
 class RecipesCreateSerializer(ModelSerializer):
     """
     Сериализатор для рецептов.
@@ -241,7 +246,6 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
-        # author = self.context.get('request').user
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
@@ -293,22 +297,13 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
-        user = self.context.get('view').request.user
-
-        if user.is_anonymous:
-            return False
-        return user.favorites.filter(recipe=recipe).exists()
+        return False
 
     def get_is_in_shopping_cart(self, recipe: Recipe):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
-        user = self.context.get('view').request.user
-
-        if user.is_anonymous:
-            return False
-
-        return user.carts.filter(recipe=recipe).exists()
+        return False
 
 
 class SubscriptionRecipeSerializer(ModelSerializer):
@@ -390,11 +385,11 @@ class SubscriptionsSerializer(ModelSerializer):
         """
         return True
 
-    # def get_recipes(self, obj):
-    #     author_recipes = obj.recipes.all()[:5]
-    #     return SubscriptionRecipeSerializer(
-    #         author_recipes, many=True
-    #     ).data
+    def get_recipes(self, obj):
+        author_recipes = obj.recipes.all()[:5]
+        return SubscriptionRecipeSerializer(
+            author_recipes, many=True
+        ).data
 
     def get_recipes_count(self, obj):
         """

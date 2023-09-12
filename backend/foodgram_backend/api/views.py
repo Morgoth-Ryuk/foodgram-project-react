@@ -181,8 +181,6 @@ class RecipeViewSet(ModelViewSet):
                     'user': request.user.id,
                     'recipes': recipes.id
                 }
-                # data={'user': request.user, 'recipes': recipes}
-                # data=request.data
             )
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user, recipes=recipes)
@@ -293,3 +291,21 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+
+
+# class SubscriptionViewSet(ModelViewSet):
+#     serializer_class = SubscriptionsSerializer
+#     permission_classes = (IsAuthenticated, AuthorStaffOrReadOnly)
+#     lookup_field = 'user'
+
+#     def get_queryset(self):
+#         return super().get_queryset().filter(user=self.request.user)
+
+
+# class FavoriteRecipeViewSet(ModelViewSet):
+#     serializer_class = FavoriteRecipeSerializer
+#     permission_classes = (AllowAny,)
+#     lookup_field = 'recipes'
+
+#     def get_queryset(self):
+#         return super().get_queryset().filter(user=self.request.user)
