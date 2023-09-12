@@ -22,8 +22,6 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User профилей.
     """
 
-    is_subscribed = SerializerMethodField(read_only=True)
-
     class Meta:
         model = User
         fields = (
@@ -35,17 +33,6 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed',
         )
         extra_kwargs = {'password': {'write_only': True}}
-
-    def get_is_subscribed(self, obj):
-        """
-        Проверка подписки пользователей.
-        """
-        user = self.context.get('request').user
-
-        if user.is_anonymous or (user == obj):
-            return False
-
-        return user.subscriptions.filter(author=obj).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -199,6 +186,7 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
+        author = self.context.get('request').user
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
