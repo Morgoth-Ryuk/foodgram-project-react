@@ -65,8 +65,9 @@ class TagSerializer(ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = '__all__'
-        read_only_fields = ('__all__',)
+        fields = ('id', 'name', 'color', 'slug')
+        # fields = '__all__'
+        # read_only_fields = ('__all__',)
 
 
 class IngredientSerializer(ModelSerializer):
@@ -127,6 +128,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(read_only=True, many=True)
     author = CustomUserSerializer(read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     ingredients = RecipesIngredientsReadSerializer(
         many=True,
         read_only=True,
@@ -143,8 +146,31 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'name',
             'image',
             'text',
-            'cooking_time'
+            'cooking_time',
+            'is_favorited',
+            'is_in_shopping_cart'
         )
+
+    def get_is_favorited(self, recipe: Recipe):
+        """
+        Проверка - находится ли рецепт в избранном.
+        """
+        user = self.context.get('view').request.user
+
+        if user.is_anonymous:
+            return False
+        return user.favorites.filter(recipes=recipe).exists()
+
+    def get_is_in_shopping_cart(self, recipe: Recipe):
+        """
+        Проверка - находится ли рецепт в списке  покупок.
+        """
+        user = self.context.get('view').request.user
+
+        if user.is_anonymous:
+            return False
+
+        return user.carts.filter(recipes=recipe).exists()
 
 
 class IngredientM2MSerializer(serializers.ModelSerializer):
@@ -312,7 +338,8 @@ class SubscriptionsSerializer(ModelSerializer):
     Вывод ответа о совершении подписки.
     """
 
-    recipes = serializers.SerializerMethodField()
+    # recipes = serializers.SerializerMethodField()
+    recipes = SubscriptionRecipeSerializer
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
@@ -334,11 +361,11 @@ class SubscriptionsSerializer(ModelSerializer):
         """
         return True
 
-    def get_recipes(self, obj):
-        author_recipes = obj.recipes.all()[:5]
-        return SubscriptionRecipeSerializer(
-            author_recipes, many=True
-        ).data
+    # def get_recipes(self, obj):
+    #     author_recipes = obj.recipes.all()[:5]
+    #     return SubscriptionRecipeSerializer(
+    #         author_recipes, many=True
+    #     ).data
 
     def get_recipes_count(self, obj):
         """
