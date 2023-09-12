@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from djoser.views import UserViewSet as DjoserUserViewSet
 from django.shortcuts import get_object_or_404
+# from django_filters.rest_framework import DjangoFilterBackend
 
 from foodgram_backend.settings import DATE_TIME_FORMAT
 from users.models import User, Subscription
@@ -21,7 +22,6 @@ from recipes.models import (
     Tag,
     IngredientInRecipe
 )
-#from api.mixins import AddDelViewMixin
 from api.paginators import PageLimitPagination
 from api.permissions import (
     AdminOrReadOnly,
@@ -43,7 +43,6 @@ from api.serializers import (
 
 
 class UserViewSet(DjoserUserViewSet):
-    # , AddDelViewMixin):
     """
     Работа с пользователями.
     """
@@ -141,7 +140,6 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
-    # , AddDelViewMixin):
     """
     Работает с рецептами.
     """
@@ -149,6 +147,7 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipesCreateSerializer
     permission_classes = [AuthorStaffOrReadOnly]
+    # filter_backends = (DjangoFilterBackend, )
     pagination_class = PageLimitPagination
 
     def get_serializer_class(self):
@@ -169,21 +168,35 @@ class RecipeViewSet(ModelViewSet):
         recipes = get_object_or_404(Recipe, pk=pk)
 
         if request.method == 'POST':
+            if FavoriteRecipe.objects.filter(user=user,
+                                       recipes=recipes).exists():
+                return Response({'errors': 'Рецепт уже добавлен!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             serializer = FavoriteRecipeSerializer(
-                data={'user': request.user.id, 'recipes': recipes.id}
+                #data={'user': request.user.id, 'recipes': recipes.id} работало как-то = хз
+                # data={'user': request.user, 'recipes': recipes}
+                data=request.data
             )
             if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                response_serializer = FavoriteRecipeSerializer(recipes)
+                serializer.save() #попробовать (user=user, recipes=recipes)
+                response_serializer = FavoriteRecipeSerializer(recipes, user)        #recipes)
                 return Response(
                     response_serializer.data, status=status.HTTP_201_CREATED
                 )
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
-        favorite_recipe = get_object_or_404(
-            FavoriteRecipe, user=request.user, recipes=recipes
-        )
-        favorite_recipe.delete()
+        
+        if not Favorite.objects.filter(author=user,
+                                       recipe=recipe).exists():
+            return Response({'errors': 'Объект не найден'},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        # favorite_recipe = get_object_or_404(
+            # FavoriteRecipe, user=request.user, recipes=recipes
+        # )
+        # favorite_recipe.delete()
+        FavoriteRecipe.objects.get(recipes=recipes).delete()
         return Response({'errors': 'Рецепт успешно удалён из избранного.'},
                         status=status.HTTP_200_OK)
 
@@ -270,12 +283,3 @@ class RecipeViewSet(ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
 
-
-class CartViewSet(ModelViewSet):
-    """
-    Работает с корзиной.
-    """
-    queryset = Carts.objects.all()
-    serializer_class = CartSerializer
-    permission_classes = [AuthorStaffOrReadOnly]
-    pagination_class = PageLimitPagination
