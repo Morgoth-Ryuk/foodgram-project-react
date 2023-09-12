@@ -37,9 +37,10 @@ from api.serializers import (
     SubscriptionCreateSerializer,
     SubscriptionsSerializer,
     CartSerializer,
-    RecipeInCartSerializer,
+    # RecipeInCartSerializer,
     FavoriteRecipeSerializer,
-    RecipeInFavoriteSerializer
+    # RecipeInFavoriteSerializer,
+    ShortRecipeSerializer
 )
 
 
@@ -185,7 +186,8 @@ class RecipeViewSet(ModelViewSet):
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user, recipes=recipes)
                 # попробовать (user=user, recipes=recipes)
-                response_serializer = RecipeInFavoriteSerializer(
+                response_serializer = ShortRecipeSerializer(
+                #RecipeInFavoriteSerializer(   # !!!!!!!!!!!!!!!
                     recipes
                 )
                 return Response(
@@ -234,7 +236,8 @@ class RecipeViewSet(ModelViewSet):
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=user, recipes=recipe)
-                response_create = RecipeInCartSerializer(recipe)
+                response_create = ShortRecipeSerializer(recipe)
+                # RecipeInCartSerializer(recipe) !!!!!!!!!!!!!!
                 return Response(response_create.data,
                                 status=status.HTTP_201_CREATED)
 

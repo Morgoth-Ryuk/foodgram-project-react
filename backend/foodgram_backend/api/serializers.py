@@ -109,9 +109,11 @@ class FavoriteRecipeSerializer(ModelSerializer):
         return True
 
 
-class RecipeInFavoriteSerializer(ModelSerializer):
+#class RecipeInFavoriteSerializer(ModelSerializer):
+class ShortRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для показа рецептов из избранного."""
-    is_favorited = serializers.SerializerMethodField(read_only=True)
+
+    # is_favorited = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -119,15 +121,15 @@ class RecipeInFavoriteSerializer(ModelSerializer):
             'id',
             'name',
             'image',
-            'cooking_time'
+            'cooking_time',
         )
         read_only_fields = ('__all__',)
 
-    def get_is_favorited(self, recipe: Recipe):
-        """
-        Отметка рецепт в избранном.
-        """
-        return True
+    #def get_is_favorited(self, recipe: Recipe):
+    #    """
+    #    Отметка рецепт в избранном.
+    #    """
+    #    return True
 
 
 class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
