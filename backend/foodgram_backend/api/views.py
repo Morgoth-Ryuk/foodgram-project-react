@@ -174,7 +174,7 @@ class RecipeViewSet(ModelViewSet):
             )
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                response_serializer = RecipeInCartSerializer(recipes)
+                response_serializer = FavoriteRecipeSerializer(recipes)
                 return Response(
                     response_serializer.data, status=status.HTTP_201_CREATED
                 )
@@ -269,3 +269,13 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+
+
+class CartViewSet(ModelViewSet):
+    """
+    Работает с корзиной.
+    """
+    queryset = Carts.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [AuthorStaffOrReadOnly]
+    pagination_class = PageLimitPagination

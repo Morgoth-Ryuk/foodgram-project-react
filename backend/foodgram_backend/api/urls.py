@@ -5,6 +5,7 @@ from api.views import (
     RecipeViewSet,
     TagViewSet,
     UserViewSet,
+    CartViewSet
 )
 
 app_name = 'api'
@@ -14,6 +15,7 @@ router.register('tags', TagViewSet, basename='tags')
 router.register('ingredients', IngredientViewSet, basename='ingredients')
 router.register('recipes', RecipeViewSet, basename='recipes')
 router.register(r'users', UserViewSet, basename='users')
+router.register('cart', CartViewSet, basename='cart')
 
 
 urlpatterns = (
