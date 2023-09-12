@@ -168,27 +168,35 @@ class RecipeViewSet(ModelViewSet):
         recipes = get_object_or_404(Recipe, pk=pk)
 
         if request.method == 'POST':
-            if FavoriteRecipe.objects.filter(user=user,
-                                       recipes=recipes).exists():
+            if FavoriteRecipe.objects.filter(
+                user=request.user,
+                recipes=recipes
+            ).exists():
                 return Response({'errors': 'Рецепт уже добавлен!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             serializer = FavoriteRecipeSerializer(
-                #data={'user': request.user.id, 'recipes': recipes.id} работало как-то = хз
+                #data={'user': request.user.id,
+                # 'recipes': recipes.id} работало как-то = хз
+
                 # data={'user': request.user, 'recipes': recipes}
                 data=request.data
             )
             if serializer.is_valid(raise_exception=True):
-                serializer.save() #попробовать (user=user, recipes=recipes)
-                response_serializer = FavoriteRecipeSerializer(recipes, user)        #recipes)
+                serializer.save()    # попробовать (user=user, recipes=recipes)
+                response_serializer = FavoriteRecipeSerializer(
+                    recipes, request.user
+                )   # recipes
                 return Response(
                     response_serializer.data, status=status.HTTP_201_CREATED
                 )
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
-        
-        if not Favorite.objects.filter(author=user,
-                                       recipe=recipe).exists():
+
+        if not FavoriteRecipe.objects.filter(
+            user=request.user,
+            recipes=recipes
+        ).exists():
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
 
@@ -282,4 +290,3 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
