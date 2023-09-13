@@ -147,8 +147,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': ('api.paginators.'
-                                 'CustomPagination'),
+    # 'DEFAULT_PAGINATION_CLASS': ('api.paginators.'
+    #                              'CustomPagination'),
 }
 
 PASSWORD_RESET_TIMEOUT = 60 * 360
