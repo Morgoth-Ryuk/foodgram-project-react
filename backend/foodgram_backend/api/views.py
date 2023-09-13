@@ -90,7 +90,7 @@ class UserViewSet(DjoserUserViewSet):
         subscription.delete()
         return Response(
             {'errors': 'Подписка удалена'},
-            status=status.HTTP_404_NOT_FOUND
+            status=status.HTTP_204_NO_CONTENT
         )
 
     @action(
