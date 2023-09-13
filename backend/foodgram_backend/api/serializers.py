@@ -294,6 +294,7 @@ class RecipesCreateSerializer(ModelSerializer):
         return False
 
 
+# удалить? вроде лишний, его заменила другим
 class UserSubscribeSerializer(CustomUserSerializer):
     """
     Вывод авторов на которых подписан текущий пользователь.
@@ -350,8 +351,8 @@ class SubscriptionsSerializer(ModelSerializer):
     Вывод ответа о совершении подписки.
     """
 
-    # recipes = serializers.SerializerMethodField()
-    recipes = ShortRecipeSerializer()
+    recipes = serializers.SerializerMethodField()
+    # recipes = ShortRecipeSerializer()
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
@@ -374,10 +375,12 @@ class SubscriptionsSerializer(ModelSerializer):
         return True
 
     def get_recipes(self, obj):
-        author_recipes = obj.recipes.all()[:5]
-        return ShortRecipeSerializer(
-            author_recipes, many=True
-        ).data
+        #author_recipes = obj.recipes.all()
+        queryset = Recipe.objects.filter(author=obj)
+        #return ShortRecipeSerializer(
+        #    author_recipes, many=True
+        #).data
+        return ShortRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         """

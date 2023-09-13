@@ -161,6 +161,7 @@ DJOSER = {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_create': ['rest_framework.permissions.AllowAny'],
         'recipe_list': ['api.permissions.AuthorStaffOrReadOnly',],
+        'current_user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
     },
     'SERIALIZERS': {
         'user': 'api.serializers.CustomUserSerializer',
