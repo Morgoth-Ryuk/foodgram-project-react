@@ -57,12 +57,12 @@ class UserViewSet(DjoserUserViewSet):
         detail=True,
         methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,))
-    def subscribe(self, request, pk):
+    def subscribe(self, request, id):
         """
         Создаёт/удалет подписку.
         """
         user = request.user
-        author = get_object_or_404(User, id=pk)   # вернула
+        author = get_object_or_404(User, id=id)   # вернула
         if request.method == 'POST':
 
             if Subscription.objects.filter(user=user, author=author).exists():
