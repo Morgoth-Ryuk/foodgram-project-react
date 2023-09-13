@@ -22,7 +22,7 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User профилей.
     """
 
-    is_subscribed = SerializerMethodField()   # NEW
+    is_subscribed = SerializerMethodField()
 
     class Meta:
         model = User
@@ -36,7 +36,7 @@ class CustomUserSerializer(UserSerializer):
         )
         extra_kwargs = {'password': {'write_only': True}}
 
-    def get_is_subscribed(self, obj: User):   # NEW
+    def get_is_subscribed(self, obj: User):
         """
         Проверка подписки пользователей.
         """
@@ -46,13 +46,6 @@ class CustomUserSerializer(UserSerializer):
             return False
 
         return user.subscriptions.filter(author=obj).exists()
-        # request = self.context.get('request')
-
-        # if request is None or request.user.is_anonymous:
-        #    return False
-        # return Subscription.objects.filter(
-        # user=request.user, author=obj
-        # ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -86,8 +79,6 @@ class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
-        # fields = '__all__'
-        # read_only_fields = ('__all__',)
 
 
 class IngredientSerializer(ModelSerializer):
@@ -108,7 +99,6 @@ class FavoriteRecipeSerializer(ModelSerializer):
     class Meta:
         model = FavoriteRecipe
         fields = '__all__'
-        # read_only_fields = ('__all__',)
 
     def get_is_favorited(self, recipe: Recipe):
         """
@@ -119,8 +109,6 @@ class FavoriteRecipeSerializer(ModelSerializer):
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для показа рецептов из избранного."""
-
-    # is_favorited = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Recipe
@@ -156,7 +144,6 @@ class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
         return obj.amount
 
 
-# READY
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при GET запросах."""
 
@@ -208,7 +195,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         return Carts.objects.filter(user=request.user, recipes=recipe).exists()
 
 
-# READY
 class IngredientM2MSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
@@ -220,7 +206,6 @@ class IngredientM2MSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-# READY
 class RecipesCreateSerializer(ModelSerializer):
     """
     Сериализатор для рецептов.
@@ -307,19 +292,6 @@ class RecipesCreateSerializer(ModelSerializer):
         Проверка - находится ли рецепт в списке  покупок.
         """
         return False
-
-
-# class SubscriptionRecipeSerializer(ModelSerializer):
-#     """Сериализатор для отображения рецептов в подписке."""
-
-#     class Meta:
-#         model = Recipe
-#         fields = (
-#             'id',
-#             'name',
-#             'image',
-#             'cooking_time'
-#         )
 
 
 class UserSubscribeSerializer(CustomUserSerializer):

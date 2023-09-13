@@ -36,6 +36,7 @@ from api.serializers import (
     UserSubscribeSerializer,
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
+    SubscriptionsSerializer,
     CartSerializer,
     FavoriteRecipeSerializer,
     ShortRecipeSerializer
@@ -62,7 +63,8 @@ class UserViewSet(DjoserUserViewSet):
         Создаёт/удалет подписку.
         """
         user = request.user
-        author = get_object_or_404(User, id=id)   # вернула
+        author = get_object_or_404(User, id=id)
+
         if request.method == 'POST':
 
             if Subscription.objects.filter(user=user, author=author).exists():
@@ -71,12 +73,12 @@ class UserViewSet(DjoserUserViewSet):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            serializer = SubscriptionCreateSerializer(    # NEW
+            serializer = SubscriptionCreateSerializer(
                 data={'user': request.user.id, 'author': author.id}
             )
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                response_create = UserSubscribeSerializer(author)
+                response_create = SubscriptionsSerializer(author)
                 return Response(
                     response_create.data,
                     status=status.HTTP_201_CREATED)
@@ -200,8 +202,6 @@ class RecipeViewSet(ModelViewSet):
                 return Response(
                     response_serializer.data, status=status.HTTP_201_CREATED
                 )
-            # return Response(serializer.errors,
-            #                 status=status.HTTP_400_BAD_REQUEST)
 
         if not FavoriteRecipe.objects.filter(
             user=request.user,
