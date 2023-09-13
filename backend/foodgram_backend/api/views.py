@@ -83,9 +83,6 @@ class UserViewSet(DjoserUserViewSet):
                     response_create.data,
                     status=status.HTTP_201_CREATED)
 
-            # return Response({'errors': 'Объект не найден'},
-            #                status=status.HTTP_404_NOT_FOUND)
-
         subscription = get_object_or_404(
             Subscription, user=request.user, author=author
         )
@@ -106,7 +103,7 @@ class UserViewSet(DjoserUserViewSet):
         """
         queryset = User.objects.filter(subscribers__user=request.user)
         pag_queryset = self.paginate_queryset(queryset)
-        serializer = UserSubscribeSerializer(
+        serializer = SubscriptionsSerializer(
             pag_queryset,
             many=True,
             context={'request': request}
