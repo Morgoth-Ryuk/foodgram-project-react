@@ -52,7 +52,7 @@ class UserViewSet(DjoserUserViewSet):
     http_method_names = ('get', 'post', 'delete')
     queryset = User.objects.all()
 
-    pagination_class = PageLimitPagination
+    # pagination_class = PageLimitPagination
     permission_classes = (AllowAny,)
 
     @action(
@@ -63,7 +63,7 @@ class UserViewSet(DjoserUserViewSet):
         """
         Создаёт/удалет подписку.
         """
-        author = get_object_or_404(User, id=pk)
+        author = get_object_or_404(User, pk=pk)
         # user = self.request.user
         if request.method == 'POST':
             serializer = SubscriptionCreateSerializer(    # NEW
