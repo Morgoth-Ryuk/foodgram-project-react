@@ -10,7 +10,7 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from djoser.views import UserViewSet as DjoserUserViewSet
 from django.shortcuts import get_object_or_404
-# from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 
 from foodgram_backend.settings import DATE_TIME_FORMAT
 from users.models import User, Subscription
@@ -23,6 +23,7 @@ from recipes.models import (
     IngredientInRecipe
 )
 from api.paginators import CustomPagination
+from api.filters import RecipeFilter
 from api.permissions import (
     AdminOrReadOnly,
     AuthorStaffOrReadOnly,
@@ -118,6 +119,7 @@ class TagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = None
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
@@ -128,6 +130,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = None
 
     def get_queryset(self):
         """
@@ -155,8 +158,9 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipesCreateSerializer
     permission_classes = [AuthorStaffOrReadOnly]
-    # filter_backends = (DjangoFilterBackend, )
     pagination_class = CustomPagination
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
