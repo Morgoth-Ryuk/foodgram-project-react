@@ -12,11 +12,11 @@ class RecipeFilter(FilterSet):
         to_field_name='slug',
     )
     is_favorited = filters.BooleanFilter(
-        field_name='favorites',
+        field_name='in_favorites',
         method='_choice_filter',
     )
     is_in_shopping_cart = filters.BooleanFilter(
-        field_name='shoppingcart',
+        field_name='in_carts',
         method='_choice_filter',
     )
 

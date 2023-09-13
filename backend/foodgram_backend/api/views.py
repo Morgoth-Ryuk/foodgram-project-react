@@ -72,7 +72,7 @@ class UserViewSet(DjoserUserViewSet):
                 )
 
             serializer = SubscriptionCreateSerializer(    # NEW
-                data={request.data}
+                data={'subscriber': request.user.id, 'author': author.id}
             )
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
