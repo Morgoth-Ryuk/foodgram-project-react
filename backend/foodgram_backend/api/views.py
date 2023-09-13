@@ -212,7 +212,7 @@ class RecipeViewSet(ModelViewSet):
 
         FavoriteRecipe.objects.get(recipes=recipes).delete()
         return Response({'errors': 'Рецепт успешно удалён из избранного.'},
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True,
             methods=['post', 'delete'],
