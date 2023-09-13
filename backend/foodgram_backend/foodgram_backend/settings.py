@@ -149,7 +149,7 @@ REST_FRAMEWORK = {
     ],
     # 'DEFAULT_PAGINATION_CLASS': ('api.paginators.'
     #                              'PageLimitPagination'),
-    "PAGE_SIZE": 10,
+    #"PAGE_SIZE": 10,
 }
 
 PASSWORD_RESET_TIMEOUT = 60 * 360

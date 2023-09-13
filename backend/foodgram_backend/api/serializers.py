@@ -22,6 +22,8 @@ class CustomUserSerializer(UserSerializer):
     Сериализатор для модели User профилей.
     """
 
+    is_subscribed = SerializerMethodField()   # NEW
+
     class Meta:
         model = User
         fields = (
@@ -33,6 +35,24 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed',
         )
         extra_kwargs = {'password': {'write_only': True}}
+
+    def get_is_subscribed(self, obj: User):   # NEW
+        """
+        Проверка подписки пользователей.
+        """
+        user = self.context.get('request').user
+
+        if user.is_anonymous or (user == obj):
+            return False
+
+        return user.subscriptions.filter(author=obj).exists()
+        # request = self.context.get('request')
+
+        # if request is None or request.user.is_anonymous:
+        #    return False
+        # return Subscription.objects.filter(
+        # user=request.user, author=obj
+        # ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -77,18 +97,6 @@ class IngredientSerializer(ModelSerializer):
         model = Ingredient
         fields = '__all__'
         read_only_fields = ('__all__',)
-
-
-# class RecipeInCartSerializer(ModelSerializer):
-#     class Meta:
-#         model = Recipe
-#         fields = (
-#             'id',
-#             'name',
-#             'image',
-#             'cooking_time'
-#         )
-#         read_only_fields = ('__all__',)
 
 
 class FavoriteRecipeSerializer(ModelSerializer):
@@ -301,17 +309,17 @@ class RecipesCreateSerializer(ModelSerializer):
         return False
 
 
-class SubscriptionRecipeSerializer(ModelSerializer):
-    """Сериализатор для отображения рецептов в подписке."""
+# class SubscriptionRecipeSerializer(ModelSerializer):
+#     """Сериализатор для отображения рецептов в подписке."""
 
-    class Meta:
-        model = Recipe
-        fields = (
-            'id',
-            'name',
-            'image',
-            'cooking_time'
-        )
+#     class Meta:
+#         model = Recipe
+#         fields = (
+#             'id',
+#             'name',
+#             'image',
+#             'cooking_time'
+#         )
 
 
 class UserSubscribeSerializer(CustomUserSerializer):
@@ -321,6 +329,7 @@ class UserSubscribeSerializer(CustomUserSerializer):
 
     recipe = RecipeReadSerializer(many=True, read_only=True)
     recipes_count = SerializerMethodField()
+    is_subscribed = SerializerMethodField()
 
     class Meta:
         model = User
@@ -336,20 +345,32 @@ class UserSubscribeSerializer(CustomUserSerializer):
         )
         read_only_fields = ('__all__',)
 
-    def get_recipes_count(self, obj: User) -> int:
+    def get_recipes_count(self, obj: User):
         """
         Подсчет общего количества рецептов у каждого автора.
         """
         return obj.recipes.count()
+
+    def get_is_subscribed(self, obj: User):
+        """
+        Проверка подписки пользователей.
+        """
+        return True
 
 
 class SubscriptionCreateSerializer(ModelSerializer):
     """
     Создание подписки.
     """
+    is_subscribed = SerializerMethodField()
+
     class Meta:
         model = Subscription
         fields = '__all__'
+        read_only_fields = ('__all__',)
+
+    def get_is_subscribed(self, obj: User):
+        return True
 
 
 class SubscriptionsSerializer(ModelSerializer):
@@ -358,7 +379,7 @@ class SubscriptionsSerializer(ModelSerializer):
     """
 
     # recipes = serializers.SerializerMethodField()
-    recipes = SubscriptionRecipeSerializer
+    recipes = ShortRecipeSerializer()
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
@@ -382,7 +403,7 @@ class SubscriptionsSerializer(ModelSerializer):
 
     def get_recipes(self, obj):
         author_recipes = obj.recipes.all()[:5]
-        return SubscriptionRecipeSerializer(
+        return ShortRecipeSerializer(
             author_recipes, many=True
         ).data
 

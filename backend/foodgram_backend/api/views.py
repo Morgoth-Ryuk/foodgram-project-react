@@ -35,7 +35,7 @@ from api.serializers import (
     UserSubscribeSerializer,
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
-    SubscriptionsSerializer,
+    # SubscriptionsSerializer,
     CartSerializer,
     # RecipeInCartSerializer,
     FavoriteRecipeSerializer,
@@ -59,20 +59,24 @@ class UserViewSet(DjoserUserViewSet):
         detail=True,
         methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,))
-    def subscribe(self, request, id):
+    def subscribe(self, request, pk):
         """
         Создаёт/удалет подписку.
         """
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(User, id=pk)
+        # user = self.request.user
         if request.method == 'POST':
-            serializer = SubscriptionCreateSerializer(
-                data={'user': request.user.id, 'author': author.id})
+            serializer = SubscriptionCreateSerializer(    # NEW
+                data={request.data}
+            )
+                # data={'user': request.user.id, 'author': author.id})
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
-                response_create = SubscriptionsSerializer(
-                    author, context={'request': request}
-                )
+                response_create = UserSubscribeSerializer(author)
+                #SubscriptionsSerializer(
+                #    author, context={'request': request}
+                #)
                 return Response(
                     response_create.data,
                     status=status.HTTP_201_CREATED)
