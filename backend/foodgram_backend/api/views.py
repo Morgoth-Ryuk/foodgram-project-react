@@ -61,7 +61,7 @@ class UserViewSet(DjoserUserViewSet):
         Создаёт/удалет подписку.
         """
         user = request.user
-        author = get_object_or_404(User, pk=pk)
+        author = get_object_or_404(User, id=pk)   # вернула
         if request.method == 'POST':
 
             if Subscription.objects.filter(user=user, author=author).exists():
@@ -80,8 +80,8 @@ class UserViewSet(DjoserUserViewSet):
                     response_create.data,
                     status=status.HTTP_201_CREATED)
 
-            return Response({'errors': 'Объект не найден'},
-                            status=status.HTTP_404_NOT_FOUND)
+            # return Response({'errors': 'Объект не найден'},
+            #                status=status.HTTP_404_NOT_FOUND)
 
         subscription = get_object_or_404(
             Subscription, user=request.user, author=author
