@@ -109,7 +109,7 @@ class UserViewSet(DjoserUserViewSet):
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
-    
+
     @action(
         detail=False,
         methods=['get', 'patch'],
