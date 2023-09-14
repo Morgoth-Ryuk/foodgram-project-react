@@ -41,11 +41,12 @@ class CustomUserSerializer(UserSerializer):
         Проверка подписки пользователей.
         """
         request = self.context.get('request')
-        user = request.user
-        if user.is_anonymous or (user == obj):
+        if not request or request.user.is_anonymous:
             return False
-
-        return user.subscriptions.filter(author=obj).exists()
+            
+        return Subscription.objects.filter(
+            user=request.user, author=obj
+        ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
