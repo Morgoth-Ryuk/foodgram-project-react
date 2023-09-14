@@ -40,8 +40,8 @@ class CustomUserSerializer(UserSerializer):
         """
         Проверка подписки пользователей.
         """
-        user = self.context.get('request').user
-
+        request = self.context.get('request')
+        user = request.user
         if user.is_anonymous or (user == obj):
             return False
 
@@ -234,6 +234,8 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
+        request = self.context.get('request')
+        author = request.user
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)

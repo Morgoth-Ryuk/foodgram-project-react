@@ -57,7 +57,7 @@ class UserViewSet(DjoserUserViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=(IsAuthenticated,))
+        permission_classes=[IsAuthenticated,])
     def subscribe(self, request, id):
         """
         Создаёт/удалет подписку.
@@ -95,7 +95,7 @@ class UserViewSet(DjoserUserViewSet):
     @action(
         detail=False,
         methods=['get',],
-        permission_classes=(IsAuthenticated,)
+        permission_classes=[IsAuthenticated,]
     )
     def subscriptions(self, request):
         """
@@ -109,6 +109,28 @@ class UserViewSet(DjoserUserViewSet):
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
+    
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        url_path='me',
+        url_name='me',
+        permission_classes=[IsAuthenticated,]
+    )
+    def get_me(self, request):
+        """Позволяет получить информацию о себе."""
+        if request.method == 'PATCH':
+            serializer = CustomUserSerializer(
+                request.user, data=request.data,
+                partial=True, context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = CustomUserSerializer(
+            request.user, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TagViewSet(ReadOnlyModelViewSet):
