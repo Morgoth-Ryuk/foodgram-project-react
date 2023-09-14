@@ -157,7 +157,7 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.AllowAny'],
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_create': ['rest_framework.permissions.AllowAny'],
-        'recipe_list': ['api.permissions.AuthorStaffOrReadOnly',],
+        'recipe_list': ['api.permissions.AuthorStaffOrReadOnly'],
         'current_user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
     },
     'SERIALIZERS': {
