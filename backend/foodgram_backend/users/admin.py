@@ -13,7 +13,6 @@ class UserAdmin(admin.ModelAdmin):
         'last_name',
         'email',
     )
-    #list_editable = ('username', 'email')
     search_fields = ('username', 'email')
     list_filter = ('username', 'email')
     empty_value_display = '-пусто-'

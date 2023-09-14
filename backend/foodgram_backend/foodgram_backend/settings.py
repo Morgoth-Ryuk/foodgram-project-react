@@ -1,6 +1,5 @@
 import os   # noqa F401
 from pathlib import Path
-# from datetime import timedelta
 
 DATE_TIME_FORMAT = "%d/%m/%Y %H:%M"
 
@@ -147,8 +146,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    # 'DEFAULT_PAGINATION_CLASS': ('api.paginators.'
-    #                              'CustomPagination'),
 }
 
 PASSWORD_RESET_TIMEOUT = 60 * 360

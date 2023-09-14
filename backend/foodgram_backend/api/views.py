@@ -33,7 +33,6 @@ from api.serializers import (
     IngredientSerializer,
     RecipesCreateSerializer,
     TagSerializer,
-    # UserSubscribeSerializer,
     CustomUserSerializer,
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
@@ -50,7 +49,6 @@ class UserViewSet(DjoserUserViewSet):
     """
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    # UserSubscribeSerializer
     http_method_names = ('get', 'post', 'delete')
 
     pagination_class = CustomPagination
@@ -209,7 +207,10 @@ class RecipeViewSet(ModelViewSet):
             return Response({'errors': 'Объект не найден'},
                             status=status.HTTP_404_NOT_FOUND)
 
-        FavoriteRecipe.objects.get(recipes=recipes).delete()
+        FavoriteRecipe.objects.get(
+            user=request.user,
+            recipes=recipes
+        ).delete()
         return Response({'errors': 'Рецепт успешно удалён из избранного.'},
                         status=status.HTTP_204_NO_CONTENT)
 
@@ -256,7 +257,10 @@ class RecipeViewSet(ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        Carts.objects.get(recipes=recipe).delete()
+        Carts.objects.get(
+            user=user,
+            recipes=recipe
+        ).delete()
         return Response({'errors': 'Рецепт успешно удалён из списка покупок.'},
                         status=status.HTTP_200_OK)
 

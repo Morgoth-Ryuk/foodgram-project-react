@@ -18,7 +18,7 @@ from recipes.models import (
     Tag,
 )
 
-site.site_header = 'Администрирование Foodgram'
+site.site_header = 'Админка Foodgram'
 
 EMPTY_VALUE_DISPLAY = 'Значение не указано'
 

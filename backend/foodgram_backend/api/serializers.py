@@ -294,43 +294,6 @@ class RecipesCreateSerializer(ModelSerializer):
         return False
 
 
-# удалить? вроде лишний, его заменила другим
-class UserSubscribeSerializer(CustomUserSerializer):
-    """
-    Вывод авторов на которых подписан текущий пользователь.
-    """
-
-    recipe = RecipeReadSerializer(many=True, read_only=True)
-    recipes_count = SerializerMethodField()
-    is_subscribed = SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipe',
-            'recipes_count',
-        )
-        read_only_fields = ('__all__',)
-
-    def get_recipes_count(self, obj: User):
-        """
-        Подсчет общего количества рецептов у каждого автора.
-        """
-        return obj.recipes.count()
-
-    def get_is_subscribed(self, obj: User):
-        """
-        Проверка подписки пользователей.
-        """
-        return True
-
-
 class SubscriptionCreateSerializer(ModelSerializer):
     """
     Создание подписки.
@@ -352,7 +315,6 @@ class SubscriptionsSerializer(ModelSerializer):
     """
 
     recipes = serializers.SerializerMethodField()
-    # recipes = ShortRecipeSerializer()
     recipes_count = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
@@ -375,11 +337,7 @@ class SubscriptionsSerializer(ModelSerializer):
         return True
 
     def get_recipes(self, obj):
-        #author_recipes = obj.recipes.all()
         queryset = Recipe.objects.filter(author=obj)
-        #return ShortRecipeSerializer(
-        #    author_recipes, many=True
-        #).data
         return ShortRecipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):

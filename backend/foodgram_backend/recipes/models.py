@@ -1,7 +1,6 @@
 from django.db import models
 from users.models import User
 from django.core.validators import MinValueValidator
-# from django.core.validators import MaxValueValidator
 
 
 class Tag(models.Model):
@@ -100,7 +99,6 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
         default=0,
-        # validators= ?
     )
 
     class Meta:

@@ -1,6 +1,4 @@
 from django.db.models import Model
-from rest_framework.permissions import DjangoModelPermissions  # noqa F401
-from rest_framework.permissions import IsAuthenticated  # noqa F401
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
@@ -35,7 +33,6 @@ class AdminOrReadOnly(BasePermission):
     """
 
     def has_object_permission(self, request, view, pk):
-        # pk добавила из-за просмотра инфы об одном теге
         return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated

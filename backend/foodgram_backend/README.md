@@ -1,4 +1,15 @@
-### Как запустить проект:
+Проект Foodgram.
+
+Является блогом для публикации рецептов.
+Есть возможности:
+* Просматривать рецепты.
+* Добавлять рецепты в избранное.
+* Подписоваться на авторов рецептов.
+* Добавлять рецепты в корзину.
+* Скачивать отложенные в корзину списки покупок.
+
+
+### Как запустить бэкэнд часть проекта:
 
 Клонировать репозиторий и перейти в него в командной строке:
 
@@ -48,4 +59,28 @@ python3 manage.py migrate
 
 ```
 python3 manage.py runserver
+```
+
+### Как запустить весь проект:
+
+```
+cd foodgram-project-react/infra
+```
+
+Запустить сборку docker compose
+```
+sudo docker compose -f docker-compose.production.yml -d
+```
+
+Внутри контейнера сделать миграции:
+```
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+
+```
+
+Собрать статику и копировать её:
+```
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/backend_static/. /backend_static/static/ 
 ```
