@@ -33,7 +33,8 @@ from api.serializers import (
     IngredientSerializer,
     RecipesCreateSerializer,
     TagSerializer,
-    UserSubscribeSerializer,
+    # UserSubscribeSerializer,
+    CustomUserSerializer,
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
     SubscriptionsSerializer,
@@ -48,7 +49,8 @@ class UserViewSet(DjoserUserViewSet):
     Работа с пользователями.
     """
     queryset = User.objects.all()
-    serializer_class = UserSubscribeSerializer
+    serializer_class = CustomUserSerializer
+    # UserSubscribeSerializer
     http_method_names = ('get', 'post', 'delete')
 
     pagination_class = CustomPagination
