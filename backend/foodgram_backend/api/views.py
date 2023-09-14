@@ -57,7 +57,7 @@ class UserViewSet(DjoserUserViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated,])
+        permission_classes=[IsAuthenticated, ])
     def subscribe(self, request, id):
         """
         Создаёт/удалет подписку.
@@ -94,8 +94,8 @@ class UserViewSet(DjoserUserViewSet):
 
     @action(
         detail=False,
-        methods=['get',],
-        permission_classes=[IsAuthenticated,]
+        methods=['get', ],
+        permission_classes=[IsAuthenticated, ]
     )
     def subscriptions(self, request):
         """
@@ -115,7 +115,7 @@ class UserViewSet(DjoserUserViewSet):
         methods=['get', 'patch'],
         url_path='me',
         url_name='me',
-        permission_classes=[IsAuthenticated,]
+        permission_classes=[IsAuthenticated, ]
     )
     def get_me(self, request):
         """Позволяет получить информацию о себе."""
@@ -193,7 +193,7 @@ class RecipeViewSet(ModelViewSet):
         methods=['post', 'delete'],
         url_path='favorite',
         url_name='favorite',
-        permission_classes=[IsAuthenticated,]
+        permission_classes=[IsAuthenticated, ]
     )
     def add_in_favorite(self, request, pk):
         """Добавление рецептов в избранное."""
@@ -287,7 +287,7 @@ class RecipeViewSet(ModelViewSet):
                         status=status.HTTP_200_OK)
 
     @action(
-        methods=['get',],
+        methods=['get', ],
         detail=False,
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
