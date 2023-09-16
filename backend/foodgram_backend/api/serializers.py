@@ -46,7 +46,6 @@ class CustomUserSerializer(UserSerializer):
         return request.user.subscriptions.filter(author=obj).exists()
 
 
-
 class CustomUserCreateSerializer(UserCreateSerializer):
     """
     Регистрация пользователя foodgram.
@@ -87,7 +86,7 @@ class IngredientSerializer(ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
-        read_only_fields = ('__all__',)
+        read_only_fields = ('id', 'name', 'measurement_unit')
 
 
 class FavoriteRecipeSerializer(ModelSerializer):
@@ -110,7 +109,6 @@ class FavoriteRecipeSerializer(ModelSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return request.user.favorites.filter(recipes=recipe).exists()
-
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -197,7 +195,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
         if request is None or request.user.is_anonymous:
             return False
-        return Carts.objects.filter(user=request.user, recipes=recipe).exists()
+        return request.user.carts.filter(recipes=recipe).exists()
 
 
 class IngredientM2MSerializer(serializers.ModelSerializer):
@@ -306,7 +304,11 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         Проверка - находится ли рецепт в списке  покупок.
         """
 
-        return False
+        request = self.context.get('request')
+
+        if request is None or request.user.is_anonymous:
+            return False
+        return request.user.carts.filter(recipes=recipe).exists()
 
 
 class SubscriptionCreateSerializer(ModelSerializer):
@@ -314,14 +316,9 @@ class SubscriptionCreateSerializer(ModelSerializer):
     Создание подписки.
     """
 
-    is_subscribed = SerializerMethodField()
-
     class Meta:
         model = Subscription
         fields = '__all__'
-
-    def get_is_subscribed(self, obj: User):
-        return True
 
 
 class SubscriptionsSerializer(CustomUserSerializer):
@@ -356,9 +353,6 @@ class SubscriptionsSerializer(CustomUserSerializer):
             return False
 
         return request.user.subscriptions.filter(author=obj).exists()
-        # Subscription.objects.filter(user=request.user, author=obj).exists()
-        # request.user.subscriptions.filter(author=obj).exists()
-        # return True
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)
