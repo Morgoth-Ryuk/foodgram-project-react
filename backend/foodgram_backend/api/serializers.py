@@ -39,13 +39,12 @@ class CustomUserSerializer(UserSerializer):
         """
         Проверка подписки пользователей.
         """
+
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             return False
+        return request.user.subscriptions.filter(author=obj).exists()
 
-        return Subscription.objects.filter(
-            user=request.user, author=obj
-        ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -107,12 +106,11 @@ class FavoriteRecipeSerializer(ModelSerializer):
         """
 
         request = self.context.get('request')
-        # user = self.context.get('request').user
 
         if request is None or request.user.is_anonymous:
             return False
         return request.user.favorites.filter(recipes=recipe).exists()
-        # return True
+
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -186,12 +184,9 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         """
 
         request = self.context.get('request')
-        # user = self.context.get('request').user
-
         if request is None or request.user.is_anonymous:
             return False
         return request.user.favorites.filter(recipes=recipe).exists()
-        # FavoriteRecipe.objects.filter(user=request.user, recipes=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe: Recipe):
         """
@@ -216,7 +211,7 @@ class IngredientM2MSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
 
-class RecipesCreateSerializer(ModelSerializer):
+class RecipesCreateUpdateSerializer(ModelSerializer):
     """
     Сериализатор для рецептов.
     Update/Create
@@ -301,7 +296,6 @@ class RecipesCreateSerializer(ModelSerializer):
         """
 
         request = self.context.get('request')
-        # user = self.context.get('request').user
 
         if request is None or request.user.is_anonymous:
             return False
@@ -325,13 +319,12 @@ class SubscriptionCreateSerializer(ModelSerializer):
     class Meta:
         model = Subscription
         fields = '__all__'
-        read_only_fields = ('__all__',)
 
     def get_is_subscribed(self, obj: User):
         return True
 
 
-class SubscriptionsSerializer(ModelSerializer):
+class SubscriptionsSerializer(CustomUserSerializer):
     """
     Вывод ответа о совершении подписки.
     """
@@ -357,7 +350,15 @@ class SubscriptionsSerializer(ModelSerializer):
         Проставление отметки о подписке
         """
 
-        return True
+        request = self.context.get('request')
+
+        if request is None or request.user.is_anonymous:
+            return False
+
+        return request.user.subscriptions.filter(author=obj).exists()
+        # Subscription.objects.filter(user=request.user, author=obj).exists()
+        # request.user.subscriptions.filter(author=obj).exists()
+        # return True
 
     def get_recipes(self, obj):
         queryset = Recipe.objects.filter(author=obj)

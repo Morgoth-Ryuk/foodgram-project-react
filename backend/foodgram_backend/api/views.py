@@ -31,7 +31,7 @@ from api.permissions import (
 )
 from api.serializers import (
     IngredientSerializer,
-    RecipesCreateSerializer,
+    RecipesCreateUpdateSerializer,
     TagSerializer,
     CustomUserSerializer,
     RecipeReadSerializer,
@@ -79,9 +79,10 @@ class UserViewSet(DjoserUserViewSet):
                 data={'user': request.user.id, 'author': author.id}
             )
             if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                response_create = SubscriptionsSerializer(author)
-                    #author)
+                serializer.save(user=user, author=author)
+                response_create = SubscriptionsSerializer(
+                    author, context={'request': request}
+                )
                 return Response(
                     response_create.data,
                     status=status.HTTP_201_CREATED)
@@ -183,7 +184,7 @@ class RecipeViewSet(ModelViewSet):
     """
 
     queryset = Recipe.objects.all()
-    serializer_class = RecipesCreateSerializer
+    serializer_class = RecipesCreateUpdateSerializer
     permission_classes = [AuthorStaffOrReadOnly]
     pagination_class = LimitPagination
     filter_backends = (DjangoFilterBackend, )
@@ -192,7 +193,7 @@ class RecipeViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             return RecipeReadSerializer
-        return RecipesCreateSerializer
+        return RecipesCreateUpdateSerializer
 
     @action(
         detail=True,
@@ -269,7 +270,7 @@ class RecipeViewSet(ModelViewSet):
             serializer = CartSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=user, recipes=recipe)
-                response_create = ShortRecipeSerializer(user=user, recipes=recipe) #было просто recioe
+                response_create = ShortRecipeSerializer(recipe)
                 return Response(response_create.data,
                                 status=status.HTTP_201_CREATED)
 
