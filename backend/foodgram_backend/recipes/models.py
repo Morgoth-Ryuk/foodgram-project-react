@@ -7,6 +7,7 @@ class Tag(models.Model):
     """
     Модель Tag.
     """
+
     name = models.CharField(
         verbose_name='Название тэга',
         max_length=20,
@@ -38,6 +39,7 @@ class Ingredient(models.Model):
     """
     Модель ингредиентов.
     """
+
     name = models.CharField(
         'Название ингредиента',
         max_length=100
@@ -60,6 +62,7 @@ class Recipe(models.Model):
     """
     Модель рецептов.
     """
+
     name = models.CharField(
         'Название блюда',
         max_length=200
@@ -125,6 +128,7 @@ class IngredientInRecipe(models.Model):
     Количество ингридиентов в блюде.
     Модель связывает Recipe и Ingredient с указанием количества ингридиента.
     """
+
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='В каких рецептах',
@@ -162,6 +166,7 @@ class FavoriteRecipe(models.Model):
     """
     Модель избранных рецептов.
     """
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

@@ -1,4 +1,3 @@
-
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
@@ -54,6 +53,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     Регистрация пользователя foodgram.
     Переопределение дефолтного UserCreateSerializer в djoser.
     """
+
     class Meta:
         model = User
         fields = (
@@ -105,7 +105,14 @@ class FavoriteRecipeSerializer(ModelSerializer):
         """
         Отметка рецепт в избранном.
         """
-        return True
+
+        request = self.context.get('request')
+        # user = self.context.get('request').user
+
+        if request is None or request.user.is_anonymous:
+            return False
+        return request.user.favorites.filter(recipes=recipe).exists()
+        # return True
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -177,18 +184,20 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
+
         request = self.context.get('request')
+        # user = self.context.get('request').user
 
         if request is None or request.user.is_anonymous:
             return False
-        return FavoriteRecipe.objects.filter(
-            user=request.user, recipes=recipe
-        ).exists()
+        return request.user.favorites.filter(recipes=recipe).exists()
+        # FavoriteRecipe.objects.filter(user=request.user, recipes=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe: Recipe):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
+
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -212,6 +221,7 @@ class RecipesCreateSerializer(ModelSerializer):
     Сериализатор для рецептов.
     Update/Create
     """
+
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
@@ -235,8 +245,7 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
-        # request = self.context.get('request')
-        # author = request.user
+
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
@@ -253,6 +262,7 @@ class RecipesCreateSerializer(ModelSerializer):
 
     def to_representation(self, recipe):
         """Определяет какой сериализатор будет использоваться для чтения."""
+
         serializer = RecipeReadSerializer(recipe)
         return serializer.data
 
@@ -260,6 +270,7 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Обновляет рецепт.
         """
+
         tags = validated_data.pop('tags', None)
         ingredients = validated_data.pop('ingredients_used', None)
 
@@ -288,12 +299,19 @@ class RecipesCreateSerializer(ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
-        return False
+
+        request = self.context.get('request')
+        # user = self.context.get('request').user
+
+        if request is None or request.user.is_anonymous:
+            return False
+        return request.user.favorites.filter(recipes=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe: Recipe):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
+
         return False
 
 
@@ -301,6 +319,7 @@ class SubscriptionCreateSerializer(ModelSerializer):
     """
     Создание подписки.
     """
+
     is_subscribed = SerializerMethodField()
 
     class Meta:
@@ -337,6 +356,7 @@ class SubscriptionsSerializer(ModelSerializer):
         """
         Проставление отметки о подписке
         """
+
         return True
 
     def get_recipes(self, obj):
@@ -347,6 +367,7 @@ class SubscriptionsSerializer(ModelSerializer):
         """
         Подсчет общего количества рецептов у каждого автора.
         """
+
         return obj.recipes.count()
 
 
@@ -354,6 +375,7 @@ class CartSerializer(ModelSerializer):
     """
     Работа с корзиной покупок.
     """
+
     name = serializers.ReadOnlyField(
         source='recipe.name',
         read_only=True
