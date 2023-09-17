@@ -40,7 +40,6 @@ class UserSerializer(DjosUserSerializer):
         """
         Проверка подписки пользователей.
         """
-
         request = self.context.get('request')
         if not request or request.user.is_anonymous:
             return False
@@ -66,6 +65,7 @@ class UserCreateSerializer(DjosUserCreateSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_username(self, value):
+        """Невозможно создать пользователя me."""
         if value == "me":
             raise ValidationError(
                 'Невозможно создать пользователя с указанным username'

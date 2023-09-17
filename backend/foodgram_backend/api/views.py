@@ -187,6 +187,7 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
+        """Определение какой сериализатор будет использоваться."""
         if self.action in ['list', 'retrieve']:
             return RecipeReadSerializer
         return RecipesCreateUpdateSerializer
@@ -295,7 +296,6 @@ class RecipeViewSet(ModelViewSet):
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
         permission_classes=[IsAuthenticated])
-
     def download_cart(self, request):
         """
         Cформировать и скачать список покупок.
