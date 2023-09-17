@@ -32,7 +32,7 @@ from api.serializers import (
     IngredientSerializer,
     RecipesCreateUpdateSerializer,
     TagSerializer,
-    CustomUserSerializer,
+    UserSerializer,
     RecipeReadSerializer,
     SubscriptionCreateSerializer,
     SubscriptionsSerializer,
@@ -48,7 +48,7 @@ class UserViewSet(DjoserUserViewSet):
     """
 
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
+    serializer_class = UserSerializer
     http_method_names = ('get', 'post', 'delete')
 
     pagination_class = LimitPagination
@@ -62,7 +62,6 @@ class UserViewSet(DjoserUserViewSet):
         """
         Создаёт/удалет подписку.
         """
-
         user = request.user
         author = get_object_or_404(User, id=id)
 
@@ -104,7 +103,6 @@ class UserViewSet(DjoserUserViewSet):
         """
         Список подписок пользоваетеля.
         """
-
         queryset = User.objects.filter(subscribers__user=request.user)
         pag_queryset = self.paginate_queryset(queryset)
         serializer = SubscriptionsSerializer(
@@ -123,16 +121,15 @@ class UserViewSet(DjoserUserViewSet):
     )
     def get_me(self, request):
         """Позволяет получить информацию о себе."""
-
         if request.method == 'PATCH':
-            serializer = CustomUserSerializer(
+            serializer = UserSerializer(
                 request.user, data=request.data,
                 partial=True, context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer = CustomUserSerializer(
+        serializer = UserSerializer(
             request.user, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -203,7 +200,6 @@ class RecipeViewSet(ModelViewSet):
     )
     def add_in_favorite(self, request, pk):
         """Добавление рецептов в избранное."""
-
         recipes = get_object_or_404(Recipe, pk=pk)
 
         if request.method == 'POST':
@@ -252,7 +248,6 @@ class RecipeViewSet(ModelViewSet):
         """
         Добавить/Удалить  рецепт из списка покупок.
         """
-
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
 
@@ -300,11 +295,11 @@ class RecipeViewSet(ModelViewSet):
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
         permission_classes=[IsAuthenticated])
+
     def download_cart(self, request):
         """
         Cформировать и скачать список покупок.
         """
-
         user = User.objects.get(id=self.request.user.pk)
 
         today = date.today().strftime(DATE_TIME_FORMAT)

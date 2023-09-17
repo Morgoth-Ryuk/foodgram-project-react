@@ -13,10 +13,11 @@ from recipes.models import (
     FavoriteRecipe
 )
 
-from djoser.serializers import UserSerializer, UserCreateSerializer
+from djoser.serializers import UserSerializer as DjosUserSerializer
+from djoser.serializers import  UserCreateSerializer as DjosUserCreateSerializer
 
 
-class CustomUserSerializer(UserSerializer):
+class UserSerializer(DjosUserSerializer):
     """
     Сериализатор для модели User профилей.
     """
@@ -46,7 +47,7 @@ class CustomUserSerializer(UserSerializer):
         return request.user.subscriptions.filter(author=obj).exists()
 
 
-class CustomUserCreateSerializer(UserCreateSerializer):
+class UserCreateSerializer(DjosUserCreateSerializer):
     """
     Регистрация пользователя foodgram.
     Переопределение дефолтного UserCreateSerializer в djoser.
@@ -90,8 +91,10 @@ class IngredientSerializer(ModelSerializer):
 
 
 class FavoriteRecipeSerializer(ModelSerializer):
-    """Сериализатор для записи рецепта в Избранное.
-    Работа с моделью FavoriteRecipe."""
+    """
+    Сериализатор для записи рецепта в Избранное.
+    Работа с моделью FavoriteRecipe.
+    """
 
     is_favorited = serializers.SerializerMethodField(read_only=True)
 
@@ -103,7 +106,6 @@ class FavoriteRecipeSerializer(ModelSerializer):
         """
         Отметка рецепт в избранном.
         """
-
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -126,6 +128,11 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
+    """
+    Вспомогательный сериализатор для чтения рецепта.
+    Работа с моделью M2M IngredientInRecipe.
+    """
+
     id = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     measurement_unit = serializers.SerializerMethodField()
@@ -136,15 +143,27 @@ class RecipesIngredientsReadSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
     def get_id(self, obj):
+        """
+        Определение id ингредиента.
+        """
         return obj.ingredient.id
 
     def get_name(self, obj):
+        """
+        Определение name-имя ингредиента.
+        """
         return obj.ingredient.name
 
     def get_measurement_unit(self, obj):
+        """
+        Определение measurement_unit в чем исчисляется ингредиент.
+        """
         return obj.ingredient.measurement_unit
 
     def get_amount(self, obj):
+        """
+        Определение amount-количества ингредиента в рецепте.
+        """
         return obj.amount
 
 
@@ -152,7 +171,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Recipe при GET запросах."""
 
     tags = TagSerializer(read_only=True, many=True)
-    author = CustomUserSerializer(read_only=True)
+    author = UserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
     ingredients = RecipesIngredientsReadSerializer(
@@ -180,7 +199,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
-
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
@@ -190,7 +208,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
-
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -199,6 +216,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 
 class IngredientM2MSerializer(serializers.ModelSerializer):
+    """
+    Вспомогательный сериализатор для создания/обновления рецепта.
+    Работа с моделью M2M IngredientInRecipe.
+    """
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
@@ -238,7 +259,6 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         """
         Создаёт рецепт.
         """
-
         ingredients = validated_data.pop('ingredients_used')
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
@@ -254,8 +274,9 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         return recipe
 
     def to_representation(self, recipe):
-        """Определяет какой сериализатор будет использоваться для чтения."""
-
+        """
+        Определяет какой сериализатор будет использоваться для чтения.
+        """
         serializer = RecipeReadSerializer(recipe)
         return serializer.data
 
@@ -263,7 +284,6 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         """
         Обновляет рецепт.
         """
-
         tags = validated_data.pop('tags', None)
         ingredients = validated_data.pop('ingredients_used', None)
 
@@ -292,7 +312,6 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         """
         Проверка - находится ли рецепт в избранном.
         """
-
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -303,7 +322,6 @@ class RecipesCreateUpdateSerializer(ModelSerializer):
         """
         Проверка - находится ли рецепт в списке  покупок.
         """
-
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -321,7 +339,7 @@ class SubscriptionCreateSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class SubscriptionsSerializer(CustomUserSerializer):
+class SubscriptionsSerializer(UserSerializer):
     """
     Вывод ответа о совершении подписки.
     """
@@ -346,7 +364,6 @@ class SubscriptionsSerializer(CustomUserSerializer):
         """
         Проставление отметки о подписке
         """
-
         request = self.context.get('request')
 
         if request is None or request.user.is_anonymous:
@@ -355,6 +372,9 @@ class SubscriptionsSerializer(CustomUserSerializer):
         return request.user.subscriptions.filter(author=obj).exists()
 
     def get_recipes(self, obj):
+        """
+        Вывод которкой информации о рецептах у каждого автора.
+        """
         queryset = Recipe.objects.filter(author=obj)
         return ShortRecipeSerializer(queryset, many=True).data
 
@@ -362,7 +382,6 @@ class SubscriptionsSerializer(CustomUserSerializer):
         """
         Подсчет общего количества рецептов у каждого автора.
         """
-
         return obj.recipes.count()
 
 
