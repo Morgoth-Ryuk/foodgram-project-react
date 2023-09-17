@@ -13,7 +13,7 @@ from recipes.models import (
     FavoriteRecipe
 )
 
-from djoser.serializers import  (
+from djoser.serializers import (
     UserCreateSerializer as DjosUserCreateSerializer,
     UserSerializer as DjosUserSerializer
 )
