@@ -12,11 +12,9 @@
 ```
 [https://cherkasovaproject13.ddns.net/
 Юзер для входа на сайт и админку:
-Адрес электронной почты: testuser@mail.ru](https://cherkasovaproject13.ddns.net/
-Юзер для входа на сайт и админку:
 Адрес электронной почты: testuser@mail.ru
 Никнэйм пользователя: TestUser
-Пароль: TestUse)
+Пароль: TestUser
 ```
 
 ### Как запустить бэкэнд часть проекта:

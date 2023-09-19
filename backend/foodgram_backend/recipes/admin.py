@@ -110,10 +110,10 @@ class TagAdmin(ModelAdmin):
 @register(FavoriteRecipe)
 class FavoriteRecipesAdmin(ModelAdmin):
     list_display = ('user', 'recipes', 'date_added')
-    search_fields = ('user__username', 'recipe__name')
+    search_fields = ('user__username', 'recipes__name')
 
 
 @register(Carts)
 class CardAdmin(ModelAdmin):
     list_display = ('user', 'recipes', 'date_added')
-    search_fields = ('user__username', 'recipe__name')
+    search_fields = ('user__username', 'recipes__name')
